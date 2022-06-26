@@ -84,6 +84,7 @@ stages:
   jobs:
   - deployment: Deploy
     displayName: Deploy
+    environment: 'HarmonyBadger-Prod'
     pool:
       vmImage: $(vmImage)
     strategy:
