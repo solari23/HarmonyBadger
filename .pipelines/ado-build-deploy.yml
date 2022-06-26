@@ -1,0 +1,43 @@
+# Pipeline to build and deploy the Harmony Badger service.
+
+# Disable any automatic triggers.
+# We will use webhooks called by GitHub to trigger the pipeline.
+trigger: none
+pr: none
+
+resources:
+  webhooks:
+    - webhook: WebHookTrigger
+      connection: WebHook\GitHub\HarmonyBadgerBuildDeploy
+  repositories:
+    - repository: self                        # The primary repository.
+      type: github
+      endpoint: GitHub\Solari23
+      name: solari23/HarmonyBadger
+    - repository: harmony_badger_config       # Private repository containing personal configurations
+      type: github
+      endpoint: GitHub\Solari23
+      name: solari23/HarmonyBadger.Config
+
+stages:
+- stage: Setup
+  displayName: Setup Stage
+  jobs:
+  - job: Setup
+    displayName: Setup
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      # Checkout code
+      - checkout: self
+        displayName: 'Checkout Primary Repo'
+
+      - checkout: harmony_badger_config
+        displayName: 'Checkout Private Config Repo'
+
+      # Copy configurations from the private repo into the corresponding locations in the primary repo.
+      - script: cp $(Build.SourcesDirectory)/HarmonyBadger.Config/TaskConfigs/* $(Build.SourcesDirectory)/HarmonyBadger/src/TaskConfigs
+        displayName: 'Copy Private Configs'
+
+      # Print the repo structure for debugging
+      - script: tree $(Build.SourcesDirectory)
