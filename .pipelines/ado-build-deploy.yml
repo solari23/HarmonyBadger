@@ -5,6 +5,11 @@
 trigger: none
 pr: none
 
+variables:
+  srcDir: '$(Build.SourcesDirectory)/HarmonyBadger/src'
+  vmImage: 'ubuntu-latest'
+  dropPackageFileName: 'HarmonyBadger_$(Build.BuildId).zip'
+
 resources:
   webhooks:
     - webhook: WebHookTrigger
@@ -26,7 +31,7 @@ stages:
   - job: Setup
     displayName: Setup
     pool:
-      vmImage: ubuntu-latest
+      vmImage: $(vmImage)
     steps:
       # Checkout code
       - checkout: self
@@ -36,8 +41,59 @@ stages:
         displayName: 'Checkout Private Config Repo'
 
       # Copy configurations from the private repo into the corresponding locations in the primary repo.
-      - script: cp $(Build.SourcesDirectory)/HarmonyBadger.Config/TaskConfigs/* $(Build.SourcesDirectory)/HarmonyBadger/src/TaskConfigs
+      - script: cp $(Build.SourcesDirectory)/HarmonyBadger.Config/TaskConfigs/* $(srcDir)/TaskConfigs
         displayName: 'Copy Private Configs'
 
       # Print the repo structure for debugging
       - script: tree $(Build.SourcesDirectory)
+
+- stage: Build
+  displayName: Build Stage
+  dependsOn: Setup
+  condition: succeeded()
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImage)
+    steps:
+      - task: DotNetCoreCLI@2
+        displayName: Core Build
+        inputs:
+          command: 'build'
+          projects: |
+            $(srcDir)/*.csproj
+          arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
+
+      - task: ArchiveFiles@2
+        displayName: 'Create Azure Function Zip Package'
+        inputs:
+          rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output'
+          includeRootFolder: false
+          archiveType: zip
+          archiveFile: $(Build.ArtifactStagingDirectory)/$(dropPackageFileName)
+          replaceExistingArchive: true
+
+      - publish: $(Build.ArtifactStagingDirectory)/$(dropPackageFileName)
+        artifact: drop
+
+- stage: Deploy
+  displayName: Deploy Stage
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    pool:
+      vmImage: $(vmImage)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureFunctionApp@1
+            displayName: 'Deploy Azure Function'
+            inputs:
+              azureSubscription: Alker_Dev\HarmonyBadger
+              appType: 'functionAppLinux'
+              appName: HarmonyBadger
+              package: '$(Pipeline.Workspace)/drop/$(dropPackageFileName)'
