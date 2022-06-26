@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <AzureFunctionsVersion>v4</AzureFunctionsVersion>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.1.1" />
+    </ItemGroup>
+    <ItemGroup>
+        <!-- Copy all TaskConfigs to the output directory. 
+             Note: The Azure DevOps build pipeline will copy configs from the private repo
+                   to the TaskConfigs directory before the build begins.
+        -->
+        <None Include="../TaskConfigs/*.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>TaskConfigs\%(FileName)%(Extension)</Link>
+        </None>
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="host.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="local.settings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+        </None>
+    </ItemGroup>
+</Project>
