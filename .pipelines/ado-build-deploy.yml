@@ -24,12 +24,11 @@ resources:
       endpoint: GitHub\Solari23
       name: solari23/HarmonyBadger.Config
 
-stages:
-- stage: Setup
-  displayName: Setup Stage
+- stage: Build
+  displayName: Setup + Build Stage
   jobs:
-  - job: Setup
-    displayName: Setup
+  - job: Build
+    displayName: Build
     pool:
       vmImage: $(vmImage)
     steps:
@@ -44,19 +43,11 @@ stages:
       - script: cp $(Build.SourcesDirectory)/HarmonyBadger.Config/TaskConfigs/* $(srcDir)/TaskConfigs
         displayName: 'Copy Private Configs'
 
-      # Print the repo structure for debugging
+      # Print the repo structure for debugging.
       - script: tree $(Build.SourcesDirectory)
+        displayName: Print Directory Tree
 
-- stage: Build
-  displayName: Build Stage
-  dependsOn: Setup
-  condition: succeeded()
-  jobs:
-  - job: Build
-    displayName: Build
-    pool:
-      vmImage: $(vmImage)
-    steps:
+      # Run the build.
       - task: DotNetCoreCLI@2
         displayName: Core Build
         inputs:
@@ -65,6 +56,7 @@ stages:
             $(srcDir)/**/*.csproj
           arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
 
+      # Zip the build outputs. This zip is the 'package' that gets deployed.
       - task: ArchiveFiles@2
         displayName: 'Create Azure Function Zip Package'
         inputs:
