@@ -1,3 +1,22 @@
 {
-    "Value" : "This is test sample 1"
+  "IsEnabled": false,
+  "Schedule": [
+    {
+      "ScheduleKind": "Cron",
+      "Expression": "*/30 * * * *"
+    },
+    {
+      "ScheduleKind": "Daily",
+      "Time": "9 AM"
+    },
+    {
+      "ScheduleKind": "Weekly",
+      "Day": "Monday",
+      "Time": "11 PM"
+    },
+    {
+      "ScheduleKind": "LastDayOfMonth",
+      "Time": "18:00"
+    }
+  ]
 }

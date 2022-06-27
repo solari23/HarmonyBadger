@@ -1,3 +1,9 @@
 {
-    "Value" : "This is test sample 2"
+  "IsEnabled": false,
+  "Schedule": [
+    {
+      "ScheduleKind": "Daily",
+      "Expression": "22:00"
+    }
+  ]
 }
