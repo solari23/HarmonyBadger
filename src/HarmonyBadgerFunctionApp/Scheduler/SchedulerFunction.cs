@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -25,9 +26,9 @@ public class SchedulerFunction
     {
         await Task.Yield();
 
-        var tzInfo = TZConvert.GetTimeZoneInfo("US/Pacific");
-        var localTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, tzInfo);
+        TestMethod(context);
 
+        var localTime = TimeHelper.CurrentLocalTime;
         var crontabSchedule = CrontabSchedule.Parse(
             Every30SecondsTrigger,
             new CrontabSchedule.ParseOptions
@@ -46,4 +47,12 @@ public class SchedulerFunction
         => Path.Combine(
             context.FunctionAppDirectory,
             Constants.TaskConfigsDirectoryName);
+
+    public void TestMethod(ExecutionContext context)
+    {
+        var jsonText = File.ReadAllText(
+            Path.Combine(GetTaskConfigDirectoryPath(context), "Sample.Test1.schedule.json"));
+        var foo = JsonSerializer.Deserialize<TaskModel.ScheduledTask>(jsonText);
+        var crons = foo.Schedule.SelectMany(s => s.ToCronExpressions()).ToList();
+    }
 }
