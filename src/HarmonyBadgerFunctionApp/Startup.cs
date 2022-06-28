@@ -16,5 +16,6 @@ public class Startup : FunctionsStartup
     public override void Configure(IFunctionsHostBuilder builder)
     {
         builder.Services.AddTransient<IScheduledTaskConfigLoader, ScheduledTaskConfigLoader>();
+        builder.Services.AddTransient<IClock, Clock>();
     }
 }

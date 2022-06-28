@@ -1,11 +1,9 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 using HarmonyBadgerFunctionApp.TaskModel;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using NCrontab;
 
 namespace HarmonyBadgerFunctionApp.Scheduler;
 
@@ -16,43 +14,55 @@ namespace HarmonyBadgerFunctionApp.Scheduler;
 /// </summary>
 public class SchedulerFunction
 {
-    private const string HourlyTrigger = "0 0 */1 * * *";
-
+    private const string EveryHourAt50MinsTrigger = "0 50 */1 * * *";
     private const string Every30SecondsTrigger = "*/30 * * * * *";
-
-    private const string Every10SecondsTrigger = "*/10 * * * * *";
 
     /// <summary>
     /// Creates a new instance of the <see cref="SchedulerFunction"/> class.
     /// </summary>
-    public SchedulerFunction(IScheduledTaskConfigLoader taskConfigLoader)
+    public SchedulerFunction(
+        IScheduledTaskConfigLoader taskConfigLoader,
+        IClock clock)
     {
         this.TaskConfigLoader = taskConfigLoader;
+        this.Clock = clock;
     }
 
     private IScheduledTaskConfigLoader TaskConfigLoader { get; }
+
+    private IClock Clock { get; }
 
     /// <summary>
     /// The entry point for the HarmonyBadger_Scheduler function.
     /// </summary>
     [FunctionName("HarmonyBadger_Scheduler")]
     public async Task RunAsync(
-        [TimerTrigger(Every30SecondsTrigger)] TimerInfo myTimer,
+        [TimerTrigger(EveryHourAt50MinsTrigger)] TimerInfo myTimer,
         ILogger log,
         ExecutionContext context)
     {
-        var localTime = TimeHelper.CurrentLocalTime;
-        var crontabSchedule = CrontabSchedule.Parse(
-            Every30SecondsTrigger,
-            new CrontabSchedule.ParseOptions
-            {
-                IncludingSeconds = true,
-            });
-        var numOccurrences = crontabSchedule
-            .GetNextOccurrences(localTime.AddSeconds(-5), localTime.AddSeconds(5))
-            .Count();
-
+        // Load the Scheduled Task configs.
         var configs = await this.TaskConfigLoader.LoadScheduledTasksAsync(log, context);
-        log.LogInformation($"[{DateTime.UtcNow}][L:{localTime}] Timer triggered, [#{numOccurrences}] found {configs.Count} config files");
+
+        // Evaluate all the configs' schedules.
+        var scheduleChecker = new ScheduleTriggerChecker(context.InvocationId.ToString());
+        this.GetTriggerCheckTimeRange(out DateTimeOffset startTimeUtc, out DateTimeOffset endTimeUtc);
+        var triggeredTasks = scheduleChecker.GetTriggeredTasks(configs, startTimeUtc, endTimeUtc);
+
+        // TODO: Publish the triggered tasks to the task queue.
+        // TODO: Improve logging.
+        log.LogInformation($"[{this.Clock.UtcNow}][L:{this.Clock.LocalNow}] Timer triggered, found {configs.Count} config files, resulting in {triggeredTasks.Count} tasks being triggered");
+    }
+
+    private void GetTriggerCheckTimeRange(out DateTimeOffset startUtc, out DateTimeOffset endUtc)
+    {
+        // Check the scheduled task executions for the next hour.
+        var utcNow = this.Clock.UtcNow;
+        startUtc = utcNow
+            .AddHours(1)
+            .AddMinutes(-utcNow.Minute)
+            .AddSeconds(-utcNow.Second)
+            .AddMilliseconds(-utcNow.Millisecond);
+        endUtc = startUtc.AddHours(1).AddSeconds(-1);
     }
 }

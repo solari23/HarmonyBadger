@@ -21,7 +21,7 @@ public class LastDayOfMonthSchedule : ISchedule
     /// <inheritdoc />
     public IEnumerable<string> ToCronExpressions(DateTime? now = null)
     {
-        now ??= TimeHelper.CurrentLocalTime;
+        now ??= TimeHelper.CurrentLocalTime.DateTime;
 
         // Handle months with 30 days.
         yield return $"{this.Time.Minute} {this.Time.Hour} 30 4,6,9,11 *";

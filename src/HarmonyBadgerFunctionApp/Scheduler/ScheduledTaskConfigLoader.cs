@@ -48,25 +48,29 @@ public class ScheduledTaskConfigLoader : IScheduledTaskConfigLoader
                 MatchCasing = MatchCasing.CaseInsensitive
             });
 
+        using var hasher = SHA256.Create();
+
         var loadFailures = new List<(string file, Exception e)>();
         var loadedTasks = new List<ScheduledTask>();
 
-        foreach (var configFile in configFilePaths)
+        foreach (var configFilePath in configFilePaths)
         {
             try
             {
-                using var fileStream = File.OpenRead(configFile);
+                using var fileStream = File.OpenRead(configFilePath);
                 var task = await JsonSerializer.DeserializeAsync<ScheduledTask>(fileStream);
 
                 // Reset the stream and use it again to calculate the file's checksum.
                 fileStream.Seek(0, SeekOrigin.Begin);
-                task.Checksum = await GetSha256ChecksumAsync(fileStream);
+                task.Checksum = await GetSha256ChecksumAsync(hasher, fileStream);
+
+                task.ConfigFileName = Path.GetFileName(configFilePath);
 
                 loadedTasks.Add(task);
             }
             catch (Exception e)
             {
-                loadFailures.Add((configFile, e));
+                loadFailures.Add((configFilePath, e));
             }
         }
 
@@ -86,9 +90,9 @@ public class ScheduledTaskConfigLoader : IScheduledTaskConfigLoader
             context.FunctionAppDirectory,
             Constants.TaskConfigsDirectoryName);
 
-    private static async Task<string> GetSha256ChecksumAsync(Stream dataStream)
+    private static async Task<string> GetSha256ChecksumAsync(SHA256 hasher, Stream dataStream)
     {
-        using var hasher = SHA256.Create();
+        hasher.Initialize();
         var hashBytes = await hasher.ComputeHashAsync(dataStream);
         return BitConverter.ToString(hashBytes).Replace("-", string.Empty);
     }

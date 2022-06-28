@@ -1,4 +1,5 @@
 ﻿using System;
+
 using TimeZoneConverter;
 
 namespace HarmonyBadgerFunctionApp;
@@ -16,12 +17,28 @@ public static class TimeHelper
     /// <summary>
     /// The <see cref="TimeZoneInfo"/> corresponding to <see cref="DefaultLocalIanaTimeZoneName"/>.
     /// </summary>
-    public static TimeZoneInfo DefaultTimeZoneInfo
+    public static TimeZoneInfo DefaultLocalTimeZoneInfo
         = TZConvert.GetTimeZoneInfo(DefaultLocalIanaTimeZoneName);
+
+    /// <summary>
+    /// Converts a UTC <see cref="DateTimeOffset"/> to the default local time
+    /// specified by <see cref="DefaultLocalIanaTimeZoneName"/>.
+    /// </summary>
+    /// <param name="utcTime">The UTC time to convert.</param>
+    /// <returns>The local time.</returns>
+    public static DateTimeOffset ConvertToLocal(DateTimeOffset utcTime)
+        => TimeZoneInfo.ConvertTime(utcTime, DefaultLocalTimeZoneInfo);
+
+    /// <summary>
+    /// Converts a local <see cref="DateTime"/> to UTC.
+    /// </summary>
+    /// <param name="localTime">The local time to convert.</param>
+    /// <returns>The UTC time.</returns>
+    public static DateTime ConvertToUtc(DateTime localTime)
+        => TimeZoneInfo.ConvertTimeToUtc(localTime, DefaultLocalTimeZoneInfo);
 
     /// <summary>
     /// Gets the current local time. The local timezone is defined by <see cref="DefaultLocalIanaTimeZoneName"/>.
     /// </summary>
-    public static DateTime CurrentLocalTime
-        => TimeZoneInfo.ConvertTime(DateTime.UtcNow, DefaultTimeZoneInfo);
+    public static DateTimeOffset CurrentLocalTime => ConvertToLocal(DateTimeOffset.UtcNow);
 }

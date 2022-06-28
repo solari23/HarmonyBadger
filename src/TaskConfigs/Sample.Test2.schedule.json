@@ -1,9 +1,9 @@
 {
-  "IsEnabled": false,
+  "IsEnabled": true,
   "Schedule": [
     {
-      "ScheduleKind": "Daily",
-      "Expression": "22:00"
+      "ScheduleKind": "Cron",
+      "Expression": "*/10 * * * *"
     }
   ]
 }

@@ -14,4 +14,10 @@ public static class Constants
     /// The extension used to identify scheduled task configuration files.
     /// </summary>
     public const string ScheduledTaskConfigFileExtension = ".schedule.json";
+
+    /// <summary>
+    /// The maximum number of times a schedule can be triggered during a single
+    /// invocation of the scheduler function.
+    /// </summary>
+    public const int MaxTriggersPerSchedule = 4;
 }

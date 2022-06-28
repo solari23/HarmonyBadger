@@ -12,7 +12,14 @@ namespace HarmonyBadgerFunctionApp.TaskModel;
 public class ScheduledTask
 {
     /// <summary>
-    /// Gets the SHA256 checksum of the data that the <see cref="ScheduledTask"/>
+    /// Gets the name of the file that that the <see cref="ScheduledTask"/>
+    /// configuration was loaded from.
+    /// </summary>
+    [JsonIgnore]
+    public string ConfigFileName { get; set; }
+
+    /// <summary>
+    /// Gets the SHA256 checksum of the file that the <see cref="ScheduledTask"/>
     /// configuration was loaded from.
     /// </summary>
     [JsonIgnore]
