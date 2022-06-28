@@ -4,6 +4,10 @@ using System.Text.Json.Serialization;
 
 namespace HarmonyBadgerFunctionApp.TaskModel;
 
+/// <summary>
+/// A JSON converter that allows deserializing an <see cref="ISchedule"/>
+/// object without knowing the exact implementation type ahead of time.
+/// </summary>
 public class SchedulePolymorphicJsonConverter : JsonConverter<ISchedule>
 {
     /// <inheritdoc />

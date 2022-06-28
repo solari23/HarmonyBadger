@@ -4,11 +4,17 @@ using System.Text.Json.Serialization;
 
 namespace HarmonyBadgerFunctionApp.TaskModel;
 
+/// <summary>
+/// A schedule set to occur once per day at a fixed time.
+/// </summary>
 public class DailySchedule : ISchedule
 {
     /// <inheritdoc />
     public ScheduleKind ScheduleKind => ScheduleKind.Daily;
 
+    /// <summary>
+    /// The scheduled time of day.
+    /// </summary>
     [JsonConverter(typeof(TimeOnlyJsonConverter))]
     public TimeOnly Time { get; set; }
 
