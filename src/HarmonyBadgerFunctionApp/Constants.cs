@@ -9,4 +9,9 @@ public static class Constants
     /// The name of the directory where config files for scheduled tasks are stored.
     /// </summary>
     public const string TaskConfigsDirectoryName = "TaskConfigs";
+
+    /// <summary>
+    /// The extension used to identify scheduled task configuration files.
+    /// </summary>
+    public const string ScheduledTaskConfigFileExtension = ".schedule.json";
 }

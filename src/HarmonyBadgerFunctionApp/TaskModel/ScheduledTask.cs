@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace HarmonyBadgerFunctionApp.TaskModel;
 
@@ -10,6 +11,13 @@ namespace HarmonyBadgerFunctionApp.TaskModel;
 /// </summary>
 public class ScheduledTask
 {
+    /// <summary>
+    /// Gets the SHA256 checksum of the data that the <see cref="ScheduledTask"/>
+    /// configuration was loaded from.
+    /// </summary>
+    [JsonIgnore]
+    public string Checksum { get; set; }
+
     /// <summary>
     /// Indicates whether or not the task is currently enabled.
     /// Disabled tasks will not be executed by the system.
