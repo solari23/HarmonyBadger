@@ -3,13 +3,19 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+
+using HarmonyBadgerFunctionApp.TaskModel;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using NCrontab;
-using TimeZoneConverter;
 
 namespace HarmonyBadgerFunctionApp.Scheduler;
 
+/// <summary>
+/// The HarmonyBadger_Scheduler function implements the logic for
+/// evaluating <see cref="ScheduledTask"/> configurations and queueing
+/// up tasks to be executed when their schedule is due.
+/// </summary>
 public class SchedulerFunction
 {
     private const string HourlyTrigger = "0 0 */1 * * *";
@@ -18,6 +24,9 @@ public class SchedulerFunction
 
     private const string Every10SecondsTrigger = "*/10 * * * * *";
 
+    /// <summary>
+    /// The entry point for the HarmonyBadger_Scheduler function.
+    /// </summary>
     [FunctionName("HarmonyBadger_Scheduler")]
     public async Task RunAsync(
         [TimerTrigger(Every10SecondsTrigger)] TimerInfo myTimer,
@@ -43,12 +52,13 @@ public class SchedulerFunction
         log.LogInformation($"[{DateTime.UtcNow}][L:{localTime}] Timer triggered, [#{numOccurrences}] found config files: {files}");
     }
 
-    public static string GetTaskConfigDirectoryPath(ExecutionContext context)
+    private static string GetTaskConfigDirectoryPath(ExecutionContext context)
         => Path.Combine(
             context.FunctionAppDirectory,
             Constants.TaskConfigsDirectoryName);
 
-    public void TestMethod(ExecutionContext context)
+    // Throwaway code for prototyping while developing. This will be removed in the near future.
+    private void TestMethod(ExecutionContext context)
     {
         var jsonText = File.ReadAllText(
             Path.Combine(GetTaskConfigDirectoryPath(context), "Sample.Test1.schedule.json"));
