@@ -1,6 +1,8 @@
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 
+using Azure.Storage.Queues;
 using HarmonyBadgerFunctionApp.TaskModel;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -14,8 +16,13 @@ namespace HarmonyBadgerFunctionApp.Scheduler;
 /// </summary>
 public class SchedulerFunction
 {
-    private const string EveryHourAt50MinsTrigger = "0 50 */1 * * *";
-    private const string Every30SecondsTrigger = "*/30 * * * * *";
+    private const string EveryHourAt50MinsTrigger = "0 50 * * * *";
+
+#if DEBUG
+    private const bool TriggerOnStartup = true;
+#else
+    private const bool TriggerOnStartup = false;
+#endif
 
     /// <summary>
     /// Creates a new instance of the <see cref="SchedulerFunction"/> class.
@@ -37,7 +44,8 @@ public class SchedulerFunction
     /// </summary>
     [FunctionName("HarmonyBadger_Scheduler")]
     public async Task RunAsync(
-        [TimerTrigger(EveryHourAt50MinsTrigger)] TimerInfo myTimer,
+        [TimerTrigger(EveryHourAt50MinsTrigger, RunOnStartup = TriggerOnStartup)] TimerInfo myTimer,
+        [Queue(Constants.TaskQueueName)] QueueClient taskQueueClient,
         ILogger log,
         ExecutionContext context)
     {
@@ -53,7 +61,32 @@ public class SchedulerFunction
         var triggeredTasks = scheduleChecker.GetTriggeredTasks(configs, startTimeUtc, endTimeUtc);
         logContext.TriggeredTasks = triggeredTasks;
 
-        // TODO: Publish the triggered tasks to the task queue.
+        // Publish the triggered tasks to the task queue.
+        // The executor function will pick them up and execute them.
+        var failedEnqueueCount = 0;
+
+        foreach (var task in triggeredTasks)
+        {
+            try
+            {
+                var taskJson = JsonSerializer.Serialize(task);
+
+                var now = this.Clock.UtcNow;
+                TimeSpan? delay = task.TriggerTimeUtc <= now
+                    ? null
+                    : task.TriggerTimeUtc - now;
+
+                await taskQueueClient.SendMessageAsync(taskJson, delay);
+            }
+            catch (Exception ex)
+            {
+                failedEnqueueCount++;
+                log.LogError(ex, $"Failed to enqueue task [{task.ToLogString()}]. It will be dropped.");
+                log.LogMetric(Constants.MetricNames.EnqueueTaskFailed, 1);
+            }
+        }
+
+        logContext.FailedTaskEnqueueCount = failedEnqueueCount;
         logContext.Publish(log);
     }
 

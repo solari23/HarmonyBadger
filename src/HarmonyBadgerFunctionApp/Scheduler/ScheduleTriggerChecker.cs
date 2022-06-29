@@ -48,12 +48,16 @@ public class ScheduleTriggerChecker
         var startLocal = TimeHelper.ConvertToLocal(startUtc).DateTime;
         this.LogContext.TriggerCheckTimeStart = startLocal;
 
-        // NCrontab will not report the provided start time as an occurrence when
-        // calling GetNextOccurrences. Adjust by 1 second to make the start time inclusive.
+        // NCrontab will not report the start time as an occurrence when calling GetNextOccurrences.
+        // Adjust by 1 second to make the start time inclusive.
         startLocal = startLocal.AddSeconds(-1);
 
         var endLocal = TimeHelper.ConvertToLocal(endUtc).DateTime;
         this.LogContext.TriggerCheckTimeEnd = endLocal;
+
+        // NCrontab will report the end time as an occurrence when calling GetNextOcurrences.
+        // Adjust by 1 second to make the end time exclusive.
+        endLocal = endLocal.AddSeconds(-1);
 
         foreach (var scheduledTask in scheduledTasks.Where(t => t.IsEnabled))
         {

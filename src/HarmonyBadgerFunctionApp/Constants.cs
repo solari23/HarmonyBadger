@@ -1,7 +1,7 @@
 ﻿namespace HarmonyBadgerFunctionApp;
 
 /// <summary>
-/// A collection of constants used throughout the project.
+/// A collection of constants used throughout the application.
 /// </summary>
 public static class Constants
 {
@@ -20,4 +20,25 @@ public static class Constants
     /// invocation of the scheduler function.
     /// </summary>
     public const int MaxTriggersPerSchedule = 4;
+
+    /// <summary>
+    /// The name of the Azure queue used to schedule tasks for execution.
+    /// </summary>
+    public const string TaskQueueName = "task-queue";
+
+    /// <summary>
+    /// A collection of names of metrics logged by the application.
+    /// </summary>
+    public static class MetricNames
+    {
+        /// <summary>
+        /// A metric logged when loading a schedule config fails.
+        /// </summary>
+        public const string LoadScheduleConfigFailed = nameof(LoadScheduleConfigFailed);
+
+        /// <summary>
+        /// A metric logged when enqueuing a triggered task fails.
+        /// </summary>
+        public const string EnqueueTaskFailed = nameof(EnqueueTaskFailed);
+    }
 }

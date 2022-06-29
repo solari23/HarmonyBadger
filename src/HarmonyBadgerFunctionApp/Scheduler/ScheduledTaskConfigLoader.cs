@@ -80,6 +80,7 @@ public class ScheduledTaskConfigLoader : IScheduledTaskConfigLoader
                 Environment.NewLine,
                 loadFailures.Select(f => $"{f.file}: {f.e}"));
             logger.LogError($"Failed to load one or more ScheduledTask config files:{Environment.NewLine}{failures}");
+            logger.LogMetric(Constants.MetricNames.LoadScheduleConfigFailed, loadFailures.Count);
         }
 
         return loadedTasks.AsReadOnly();
