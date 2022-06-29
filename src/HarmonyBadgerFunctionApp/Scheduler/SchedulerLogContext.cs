@@ -61,6 +61,11 @@ public class SchedulerLogContext
     public IReadOnlyCollection<TriggeredTask> TriggeredTasks { get; set; }
 
     /// <summary>
+    /// The number of <see cref="TriggeredTasks"/> that we failed to enqueue.
+    /// </summary>
+    public int FailedTaskEnqueueCount { get; set; }
+
+    /// <summary>
     /// Formats and publishes log data.
     /// </summary>
     /// <param name="logger">The logging utility.</param>
@@ -72,6 +77,12 @@ public class SchedulerLogContext
             $" Loaded {this.LoadedTaskConfigs.Count} schedule configurations ({this.LoadedTaskConfigs.Count(c => c.IsEnabled)} enabled).");
         builder.Append(
             $" {this.TriggeredTasks.Count} tasks triggered for the period between [{this.TriggerCheckTimeStart} -> {this.TriggerCheckTimeEnd}].");
+
+        if (this.FailedTaskEnqueueCount > 0)
+        {
+            builder.Append($" Failed to enqueue {this.FailedTaskEnqueueCount} tasks.");
+        }
+
         logger.LogInformation(builder.ToString());
 
         // Log the tasks that were triggered.

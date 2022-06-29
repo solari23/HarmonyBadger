@@ -3,7 +3,11 @@
   "Schedule": [
     {
       "ScheduleKind": "Daily",
-      "Time": "9 PM"
+      "Time": "11:05 PM"
+    },
+    {
+      "ScheduleKind": "Cron",
+      "Expression": "0 * * * *"
     }
   ]
 }
