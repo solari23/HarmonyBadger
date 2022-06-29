@@ -30,8 +30,8 @@ public class ScheduleTriggerChecker
     /// that are triggered between the given start and end times.
     /// </summary>
     /// <param name="scheduledTasks">The <see cref="ScheduledTask"/> configurations.</param>
-    /// <param name="startUtc">The start of the time range to check.</param>
-    /// <param name="endUtc">The end of the time range to check.</param>
+    /// <param name="startUtc">The inclusive start of the time range to check.</param>
+    /// <param name="endUtc">The exclusive end of the time range to check.</param>
     /// <returns>The tasks that are triggered.</returns>
     public IReadOnlyCollection<TriggeredTask> GetTriggeredTasks(
         IEnumerable<ScheduledTask> scheduledTasks,
@@ -46,8 +46,13 @@ public class ScheduleTriggerChecker
         };
 
         var startLocal = TimeHelper.ConvertToLocal(startUtc).DateTime;
-        var endLocal = TimeHelper.ConvertToLocal(endUtc).DateTime;
         this.LogContext.TriggerCheckTimeStart = startLocal;
+
+        // NCrontab will not report the provided start time as an occurrence when
+        // calling GetNextOccurrences. Adjust by 1 second to make the start time inclusive.
+        startLocal = startLocal.AddSeconds(-1);
+
+        var endLocal = TimeHelper.ConvertToLocal(endUtc).DateTime;
         this.LogContext.TriggerCheckTimeEnd = endLocal;
 
         foreach (var scheduledTask in scheduledTasks.Where(t => t.IsEnabled))

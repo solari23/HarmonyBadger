@@ -2,8 +2,8 @@
   "IsEnabled": true,
   "Schedule": [
     {
-      "ScheduleKind": "Cron",
-      "Expression": "*/10 * * * *"
+      "ScheduleKind": "Daily",
+      "Time": "9 PM"
     }
   ]
 }
