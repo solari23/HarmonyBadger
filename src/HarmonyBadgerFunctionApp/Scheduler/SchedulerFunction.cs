@@ -41,17 +41,20 @@ public class SchedulerFunction
         ILogger log,
         ExecutionContext context)
     {
+        var logContext = new SchedulerLogContext(context.InvocationId, this.Clock);
+
         // Load the Scheduled Task configs.
         var configs = await this.TaskConfigLoader.LoadScheduledTasksAsync(log, context);
+        logContext.LoadedTaskConfigs = configs;
 
         // Evaluate all the configs' schedules.
-        var scheduleChecker = new ScheduleTriggerChecker(context.InvocationId.ToString());
+        var scheduleChecker = new ScheduleTriggerChecker(logContext);
         this.GetTriggerCheckTimeRange(out DateTimeOffset startTimeUtc, out DateTimeOffset endTimeUtc);
         var triggeredTasks = scheduleChecker.GetTriggeredTasks(configs, startTimeUtc, endTimeUtc);
+        logContext.TriggeredTasks = triggeredTasks;
 
         // TODO: Publish the triggered tasks to the task queue.
-        // TODO: Improve logging.
-        log.LogInformation($"[{this.Clock.UtcNow}][L:{this.Clock.LocalNow}] Timer triggered, found {configs.Count} config files, resulting in {triggeredTasks.Count} tasks being triggered");
+        logContext.Publish(log);
     }
 
     private void GetTriggerCheckTimeRange(out DateTimeOffset startUtc, out DateTimeOffset endUtc)
@@ -63,6 +66,6 @@ public class SchedulerFunction
             .AddMinutes(-utcNow.Minute)
             .AddSeconds(-utcNow.Second)
             .AddMilliseconds(-utcNow.Millisecond);
-        endUtc = startUtc.AddHours(1).AddSeconds(-1);
+        endUtc = startUtc.AddHours(1);
     }
 }

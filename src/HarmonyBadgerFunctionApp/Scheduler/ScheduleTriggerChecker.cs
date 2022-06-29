@@ -18,12 +18,12 @@ public class ScheduleTriggerChecker
     /// Creates a new instance of the <see cref="ScheduleTriggerChecker"/> class.
     /// </summary>
     /// <param name="functionInvocationId">The current function execution invocation ID.</param>
-    public ScheduleTriggerChecker(string functionInvocationId)
+    public ScheduleTriggerChecker(SchedulerLogContext logContext)
     {
-        this.FunctionInvocationId = functionInvocationId;
+        this.LogContext = logContext;
     }
 
-    private string FunctionInvocationId { get; }
+    private SchedulerLogContext LogContext { get; }
 
     /// <summary>
     /// Checks the given <see cref="ScheduledTask"/> configurations and returns the tasks
@@ -47,6 +47,8 @@ public class ScheduleTriggerChecker
 
         var startLocal = TimeHelper.ConvertToLocal(startUtc).DateTime;
         var endLocal = TimeHelper.ConvertToLocal(endUtc).DateTime;
+        this.LogContext.TriggerCheckTimeStart = startLocal;
+        this.LogContext.TriggerCheckTimeEnd = endLocal;
 
         foreach (var scheduledTask in scheduledTasks.Where(t => t.IsEnabled))
         {
@@ -66,7 +68,7 @@ public class ScheduleTriggerChecker
                     TriggerTimeUtc = time,
                     ScheduleConfigName = scheduledTask.ConfigFileName,
                     ScheduleConfigChecksum = scheduledTask.Checksum,
-                    EvaluatingFunctionInvocationId = this.FunctionInvocationId,
+                    EvaluatingFunctionInvocationId = this.LogContext.InvocationId,
                     EvaluationTimeUtc = DateTime.UtcNow,
                 }));
             }

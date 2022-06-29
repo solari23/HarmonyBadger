@@ -56,4 +56,11 @@ public class TriggeredTask
     /// The time of the schedules function invocation.
     /// </summary>
     public DateTime EvaluationTimeUtc { get; set; }
+
+    /// <summary>
+    /// Creates a summary string of the <see cref="TriggeredTask"/> instance suitable for logging.
+    /// </summary>
+    /// <returns>A summary of the object for logging.</returns>
+    public string ToLogString()
+        => $"Id:{this.TriggerId[..5]},Conf:{this.ScheduleConfigName},ConfSHA:{this.ScheduleConfigChecksum[..5]},Sched:{this.EvaluatingFunctionInvocationId}";
 }
