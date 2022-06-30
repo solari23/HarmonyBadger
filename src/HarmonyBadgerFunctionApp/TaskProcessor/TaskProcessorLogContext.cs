@@ -58,7 +58,10 @@ public class TaskProcessorLogContext
         var builder = new StringBuilder();
         builder.Append($"[{this.ExecutionTimeUtc:s}][L:{this.ExecutionTimeLocal}][TaskProcessor]");
 
-        builder.Append($" Recived task {this.Task.ToLogString()}.");
+        if (this.Task is not null)
+        {
+            builder.Append($" Recived task {this.Task.ToLogString()}.");
+        }
 
         if (!string.IsNullOrEmpty(this.TaskProcessingFailureReason))
         {
