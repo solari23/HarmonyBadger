@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace HarmonyBadgerFunctionApp.TaskModel;
 
@@ -9,7 +11,7 @@ namespace HarmonyBadgerFunctionApp.TaskModel;
 /// <remarks>
 /// See documentation for <see cref="Expression"/> for details on syntax.
 /// </remarks>
-public class CronSchedule : ISchedule
+public class CronSchedule : ISchedule, IValidatableObject, IJsonOnDeserialized
 {
     /// <inheritdoc />
     public ScheduleKind ScheduleKind => ScheduleKind.Cron;
@@ -29,4 +31,17 @@ public class CronSchedule : ISchedule
     {
         yield return this.Expression;
     }
+
+    /// <inheritdoc />
+    public IEnumerable<ValidationResult> Validate(ValidationContext _)
+    {
+        if (string.IsNullOrWhiteSpace(this.Expression))
+        {
+            yield return new ValidationResult(
+                $"CRON schedule is missing field '{nameof(this.Expression)}'");
+        }
+    }
+
+    /// <inheritdoc />
+    public void OnDeserialized() => this.ThrowIfNotValid();
 }
