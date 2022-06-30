@@ -37,6 +37,11 @@ public class ScheduledTask : IValidatableObject, IJsonOnDeserialized
     /// </summary>
     public List<ISchedule> Schedule { get; set; }
 
+    /// <summary>
+    /// Details about the task to run.
+    /// </summary>
+    public ITask Task { get; set; }
+
     /// <inheritdoc />
     public IEnumerable<ValidationResult> Validate(ValidationContext _)
     {
@@ -44,6 +49,12 @@ public class ScheduledTask : IValidatableObject, IJsonOnDeserialized
         {
             yield return new ValidationResult(
                 $"Schedule config does not define schedules in field '{nameof(this.Schedule)}'");
+        }
+
+        if (this.Task is null)
+        {
+            yield return new ValidationResult(
+                $"Schedule missing details about task to run in field '{nameof(this.Schedule)}'");
         }
     }
 

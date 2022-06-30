@@ -7,7 +7,7 @@ namespace HarmonyBadgerFunctionApp.TaskModel;
 /// <summary>
 /// Details about the activation of a <see cref="ScheduledTask"/>.
 /// </summary>
-public class TriggeredTask
+public class TaskActivationDetails
 {
     /// <summary>
     /// Helper to generate the unique <see cref="TriggerId"/> based on the
@@ -58,7 +58,12 @@ public class TriggeredTask
     public DateTime EvaluationTimeUtc { get; set; }
 
     /// <summary>
-    /// Creates a summary string of the <see cref="TriggeredTask"/> instance suitable for logging.
+    /// Details about the task to execute.
+    /// </summary>
+    public ITask Task { get; set; }
+
+    /// <summary>
+    /// Creates a summary string of the <see cref="TaskActivationDetails"/> instance suitable for logging.
     /// </summary>
     /// <returns>A summary of the object for logging.</returns>
     public string ToLogString()

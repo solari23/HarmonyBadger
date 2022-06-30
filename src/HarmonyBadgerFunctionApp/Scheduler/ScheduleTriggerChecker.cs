@@ -34,12 +34,12 @@ public class ScheduleTriggerChecker
     /// <param name="startUtc">The inclusive start of the time range to check.</param>
     /// <param name="endUtc">The exclusive end of the time range to check.</param>
     /// <returns>The tasks that are triggered.</returns>
-    public IReadOnlyCollection<TriggeredTask> GetTriggeredTasks(
+    public IReadOnlyCollection<TaskActivationDetails> GetTriggeredTasks(
         IEnumerable<ScheduledTask> scheduledTasks,
         DateTimeOffset startUtc,
         DateTimeOffset endUtc)
     {
-        var triggeredTasks = new List<TriggeredTask>();
+        var triggeredTasks = new List<TaskActivationDetails>();
 
         var cronParseOptions = new CrontabSchedule.ParseOptions
         {
@@ -72,14 +72,15 @@ public class ScheduleTriggerChecker
 
             if (triggerTimesUtc.Any())
             {
-                triggeredTasks.AddRange(triggerTimesUtc.Select(time => new TriggeredTask
+                triggeredTasks.AddRange(triggerTimesUtc.Select(time => new TaskActivationDetails
                 {
-                    TriggerId = TriggeredTask.CreateTriggerId(scheduledTask.Checksum, time),
+                    TriggerId = TaskActivationDetails.CreateTriggerId(scheduledTask.Checksum, time),
                     TriggerTimeUtc = time,
                     ScheduleConfigName = scheduledTask.ConfigFileName,
                     ScheduleConfigChecksum = scheduledTask.Checksum,
                     EvaluatingFunctionInvocationId = this.LogContext.InvocationId,
                     EvaluationTimeUtc = DateTime.UtcNow,
+                    Task = scheduledTask.Task,
                 }));
             }
         }

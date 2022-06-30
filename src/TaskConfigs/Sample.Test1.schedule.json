@@ -18,5 +18,9 @@
       "ScheduleKind": "LastDayOfMonth",
       "Time": "18:00"
     }
-  ]
+  ],
+  "Task": {
+    "TaskKind": "Test",
+    "DebugMessage": "Hello World!"
+  }
 }

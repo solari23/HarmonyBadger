@@ -11,7 +11,7 @@ using HarmonyBadgerFunctionApp.TaskModel;
 namespace HarmonyBadgerFunctionApp.TaskProcessor;
 
 /// <summary>
-/// The HarmonyBadger_TaskProcessor function reads <see cref="TriggeredTask"/>
+/// The HarmonyBadger_TaskProcessor function reads <see cref="TaskActivationDetails"/>
 /// items from an Azure Storage Queue and executes them.
 /// </summary>
 public class TaskProcessorFunction
@@ -42,11 +42,11 @@ public class TaskProcessorFunction
     {
         var logContext = new TaskProcessorLogContext(context.InvocationId, this.Clock);
 
-        TriggeredTask task = null;
+        TaskActivationDetails task = null;
 
         try
         {
-            task = queueMessage.Body.ToObjectFromJson<TriggeredTask>();
+            task = queueMessage.Body.ToObjectFromJson<TaskActivationDetails>();
             logContext.Task = task;
         }
         catch (Exception e)
