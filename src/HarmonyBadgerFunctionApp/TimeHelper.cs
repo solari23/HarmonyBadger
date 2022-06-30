@@ -1,6 +1,4 @@
-﻿using System;
-
-using TimeZoneConverter;
+﻿using TimeZoneConverter;
 
 namespace HarmonyBadgerFunctionApp;
 

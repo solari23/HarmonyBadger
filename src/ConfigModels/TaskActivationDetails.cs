@@ -1,8 +1,7 @@
-﻿using System;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace HarmonyBadgerFunctionApp.TaskModel;
+namespace HarmonyBadger.ConfigModels;
 
 /// <summary>
 /// Details about the activation of a <see cref="ScheduledTask"/>.

@@ -1,8 +1,9 @@
-﻿using System;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace HarmonyBadgerFunctionApp.TaskModel;
+using HarmonyBadger.ConfigModels.Schedules;
+
+namespace HarmonyBadger.ConfigModels;
 
 /// <summary>
 /// A JSON converter that allows deserializing an <see cref="ISchedule"/>

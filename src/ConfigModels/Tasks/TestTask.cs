@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace HarmonyBadgerFunctionApp.TaskModel.Tasks;
+namespace HarmonyBadger.ConfigModels.Tasks;
 
 /// <summary>
 /// A test task that should display a configured debug message when executed.

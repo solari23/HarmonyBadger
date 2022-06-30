@@ -1,6 +1,6 @@
-﻿using HarmonyBadgerFunctionApp.TaskModel.Tasks;
+﻿using HarmonyBadger.ConfigModels.Tasks;
 
-namespace HarmonyBadgerFunctionApp.TaskModel;
+namespace HarmonyBadger.ConfigModels;
 
 /// <summary>
 /// Identifies a type of task.

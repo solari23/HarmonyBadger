@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace HarmonyBadgerFunctionApp.TaskModel;
+namespace HarmonyBadger.ConfigModels;
 
 /// <summary>
 /// The schema for a task that needs to be executed on a schedule.

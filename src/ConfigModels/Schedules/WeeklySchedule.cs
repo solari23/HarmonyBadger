@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace HarmonyBadgerFunctionApp.TaskModel;
+namespace HarmonyBadger.ConfigModels.Schedules;
 
 /// <summary>
 /// A schedule set to occur once per week on a fixed day at a fixed time.

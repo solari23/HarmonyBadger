@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using NCrontab;
 
-using NCrontab;
-
-using HarmonyBadgerFunctionApp.TaskModel;
+using HarmonyBadger.ConfigModels;
 
 namespace HarmonyBadgerFunctionApp.Scheduler;
 

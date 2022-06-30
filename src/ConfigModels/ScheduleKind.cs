@@ -1,4 +1,4 @@
-﻿namespace HarmonyBadgerFunctionApp.TaskModel;
+﻿namespace HarmonyBadger.ConfigModels;
 
 /// <summary>
 /// Identifies the mechanism by which a schedule is defined.

@@ -1,9 +1,7 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 
-namespace HarmonyBadgerFunctionApp.TaskModel;
+namespace HarmonyBadger.ConfigModels;
 
 /// <summary>
 /// Extensions to simplify dealing with <see cref="IValidatableObject"/>.

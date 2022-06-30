@@ -1,9 +1,8 @@
-﻿using System;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using HarmonyBadgerFunctionApp.TaskModel.Tasks;
+using HarmonyBadger.ConfigModels.Tasks;
 
-namespace HarmonyBadgerFunctionApp.TaskModel;
+namespace HarmonyBadger.ConfigModels;
 
 /// <summary>
 /// A JSON converter that allows deserializing an <see cref="ITask"/>

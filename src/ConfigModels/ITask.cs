@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace HarmonyBadgerFunctionApp.TaskModel;
+namespace HarmonyBadger.ConfigModels;
 
 /// <summary>
 /// Details about a task that can be executed.

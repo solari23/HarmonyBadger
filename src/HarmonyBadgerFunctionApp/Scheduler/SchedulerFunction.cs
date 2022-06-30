@@ -1,12 +1,12 @@
-using System;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 using Azure.Storage.Queues;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
-using HarmonyBadgerFunctionApp.TaskModel;
+using HarmonyBadger.ConfigModels;
+
+using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
 
 namespace HarmonyBadgerFunctionApp.Scheduler;
 

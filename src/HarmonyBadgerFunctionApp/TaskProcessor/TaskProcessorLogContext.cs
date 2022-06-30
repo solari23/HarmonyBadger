@@ -1,9 +1,8 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
 using Microsoft.Extensions.Logging;
 
-using HarmonyBadgerFunctionApp.TaskModel;
+using HarmonyBadger.ConfigModels;
 
 namespace HarmonyBadgerFunctionApp.TaskProcessor;
 

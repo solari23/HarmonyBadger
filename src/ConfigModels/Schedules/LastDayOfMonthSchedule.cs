@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace HarmonyBadgerFunctionApp.TaskModel;
+namespace HarmonyBadger.ConfigModels.Schedules;
 
 /// <summary>
 /// A schedule set to occur on the last day of the month at a fixed time.
@@ -22,7 +20,7 @@ public class LastDayOfMonthSchedule : ISchedule, IValidatableObject, IJsonOnDese
     /// <inheritdoc />
     public IEnumerable<string> ToCronExpressions(DateTime? now = null)
     {
-        now ??= TimeHelper.CurrentLocalTime.DateTime;
+        now ??= DateTime.UtcNow;
         var time = this.Time.Value;
 
         // Handle months with 30 days.

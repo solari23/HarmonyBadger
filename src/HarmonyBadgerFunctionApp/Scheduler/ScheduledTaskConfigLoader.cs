@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
-using HarmonyBadgerFunctionApp.TaskModel;
+using HarmonyBadger.ConfigModels;
+
+using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
 
 namespace HarmonyBadgerFunctionApp.Scheduler;
 

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HarmonyBadgerFunctionApp;
+﻿namespace HarmonyBadgerFunctionApp;
 
 /// <summary>
 /// Interface to assist in using Dependency Injection
