@@ -9,5 +9,9 @@
       "ScheduleKind": "Cron",
       "Expression": "0 * * * *"
     }
-  ]
+  ],
+  "Task": {
+    "TaskKind": "Test",
+    "DebugMessage": "Hello World, Test2!"
+  }
 }

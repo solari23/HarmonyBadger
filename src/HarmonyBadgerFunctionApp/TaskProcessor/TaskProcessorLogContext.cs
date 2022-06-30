@@ -42,7 +42,7 @@ public class TaskProcessorLogContext
     /// <summary>
     /// The task that was queued for processing.
     /// </summary>
-    public TriggeredTask Task { private get; set; }
+    public TaskActivationDetails Task { private get; set; }
 
     /// <summary>
     /// If task processing fails, a reason to be recorded in the canonical log.

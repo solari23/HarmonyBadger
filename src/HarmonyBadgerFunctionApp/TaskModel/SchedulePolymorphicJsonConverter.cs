@@ -25,7 +25,7 @@ public class SchedulePolymorphicJsonConverter : JsonConverter<ISchedule>
                 var rawKind = kindNode.GetString();
                 if (!Enum.TryParse(rawKind, ignoreCase: true, out ScheduleKind kind))
                 {
-                    throw new JsonException($"");
+                    throw new JsonException($"Value '{rawKind}' is not a valid {nameof(ScheduleKind)}");
                 }
 
                 var rootElement = doc.RootElement.GetRawText();

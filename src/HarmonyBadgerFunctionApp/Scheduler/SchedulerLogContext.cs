@@ -58,7 +58,7 @@ public class SchedulerLogContext
     /// <summary>
     /// The tasks that were triggered during execution.
     /// </summary>
-    public IReadOnlyCollection<TriggeredTask> TriggeredTasks { private get; set; }
+    public IReadOnlyCollection<TaskActivationDetails> TriggeredTasks { private get; set; }
 
     /// <summary>
     /// The number of <see cref="TriggeredTasks"/> that we failed to enqueue.
