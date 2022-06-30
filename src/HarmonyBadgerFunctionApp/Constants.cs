@@ -1,4 +1,6 @@
-﻿namespace HarmonyBadgerFunctionApp;
+﻿using System.Text.Json;
+
+namespace HarmonyBadgerFunctionApp;
 
 /// <summary>
 /// A collection of constants used throughout the application.
@@ -25,6 +27,15 @@ public static class Constants
     /// The name of the Azure queue used to schedule tasks for execution.
     /// </summary>
     public const string TaskQueueName = "task-queue";
+
+    /// <summary>
+    /// Default settings to use for the .Net JSON serializer.
+    /// </summary>
+    public static readonly JsonSerializerOptions DefaultJsonSerializerOptions = new()
+    {
+        AllowTrailingCommas = true,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+    };
 
     /// <summary>
     /// A collection of names of metrics logged by the application.

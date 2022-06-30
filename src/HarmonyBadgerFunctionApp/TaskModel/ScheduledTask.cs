@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace HarmonyBadgerFunctionApp.TaskModel;
@@ -9,7 +10,7 @@ namespace HarmonyBadgerFunctionApp.TaskModel;
 /// The tasks are configured as JSON documents read from the directory
 /// specified in constant <see cref="Constants.TaskConfigsDirectoryName"/>.
 /// </summary>
-public class ScheduledTask
+public class ScheduledTask : IValidatableObject, IJsonOnDeserialized
 {
     /// <summary>
     /// Gets the name of the file that that the <see cref="ScheduledTask"/>
@@ -35,4 +36,17 @@ public class ScheduledTask
     /// The schedule(s) that define what time the task should be run.
     /// </summary>
     public List<ISchedule> Schedule { get; set; }
+
+    /// <inheritdoc />
+    public IEnumerable<ValidationResult> Validate(ValidationContext _)
+    {
+        if (this.Schedule is null || this.Schedule.Count == 0)
+        {
+            yield return new ValidationResult(
+                $"Schedule config does not define schedules in field '{nameof(this.Schedule)}'");
+        }
+    }
+
+    /// <inheritdoc />
+    public void OnDeserialized() => this.ThrowIfNotValid();
 }

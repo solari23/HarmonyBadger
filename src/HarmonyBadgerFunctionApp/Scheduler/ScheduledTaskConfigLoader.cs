@@ -59,7 +59,9 @@ public class ScheduledTaskConfigLoader : IScheduledTaskConfigLoader
             try
             {
                 using var fileStream = File.OpenRead(configFilePath);
-                var task = await JsonSerializer.DeserializeAsync<ScheduledTask>(fileStream);
+                var task = await JsonSerializer.DeserializeAsync<ScheduledTask>(
+                    fileStream,
+                    Constants.DefaultJsonSerializerOptions);
 
                 // Reset the stream and use it again to calculate the file's checksum.
                 fileStream.Seek(0, SeekOrigin.Begin);
@@ -71,7 +73,7 @@ public class ScheduledTaskConfigLoader : IScheduledTaskConfigLoader
             }
             catch (Exception e)
             {
-                loadFailures.Add((configFilePath, e));
+                loadFailures.Add((Path.GetFileName(configFilePath), e));
             }
         }
 
