@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using HarmonyBadgerFunctionApp.TaskModel;
 using NCrontab;
+
+using HarmonyBadgerFunctionApp.TaskModel;
 
 namespace HarmonyBadgerFunctionApp.Scheduler;
 

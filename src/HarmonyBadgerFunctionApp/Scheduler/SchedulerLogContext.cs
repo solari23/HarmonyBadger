@@ -43,27 +43,27 @@ public class SchedulerLogContext
     /// <summary>
     /// The start of the time range used to search for triggered schedules.
     /// </summary>
-    public DateTime TriggerCheckTimeStart { get; set; }
+    public DateTime TriggerCheckTimeStart { private get; set; }
 
     /// <summary>
     /// The end of the time range used to search for triggered schedules.
     /// </summary>
-    public DateTime TriggerCheckTimeEnd { get; set; }
+    public DateTime TriggerCheckTimeEnd { private get; set; }
 
     /// <summary>
     /// The <see cref="ScheduledTask"/> configurations loaded during execution.
     /// </summary>
-    public IReadOnlyCollection<ScheduledTask> LoadedTaskConfigs { get; set; }
+    public IReadOnlyCollection<ScheduledTask> LoadedTaskConfigs { private get; set; }
 
     /// <summary>
     /// The tasks that were triggered during execution.
     /// </summary>
-    public IReadOnlyCollection<TriggeredTask> TriggeredTasks { get; set; }
+    public IReadOnlyCollection<TriggeredTask> TriggeredTasks { private get; set; }
 
     /// <summary>
     /// The number of <see cref="TriggeredTasks"/> that we failed to enqueue.
     /// </summary>
-    public int FailedTaskEnqueueCount { get; set; }
+    public int FailedTaskEnqueueCount { private get; set; }
 
     /// <summary>
     /// Formats and publishes log data.

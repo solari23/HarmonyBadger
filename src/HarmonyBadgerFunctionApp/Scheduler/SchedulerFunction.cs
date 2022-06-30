@@ -3,9 +3,10 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 using Azure.Storage.Queues;
-using HarmonyBadgerFunctionApp.TaskModel;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+
+using HarmonyBadgerFunctionApp.TaskModel;
 
 namespace HarmonyBadgerFunctionApp.Scheduler;
 
@@ -19,9 +20,9 @@ public class SchedulerFunction
     private const string EveryHourAt50MinsTrigger = "0 50 * * * *";
 
 #if DEBUG
-    private const bool TriggerOnStartup = true;
+    private const bool LauchImmediately = true;
 #else
-    private const bool TriggerOnStartup = false;
+    private const bool LauchImmediately = false;
 #endif
 
     /// <summary>
@@ -44,7 +45,7 @@ public class SchedulerFunction
     /// </summary>
     [FunctionName("HarmonyBadger_Scheduler")]
     public async Task RunAsync(
-        [TimerTrigger(EveryHourAt50MinsTrigger, RunOnStartup = TriggerOnStartup)] TimerInfo myTimer,
+        [TimerTrigger(EveryHourAt50MinsTrigger, RunOnStartup = LauchImmediately)] TimerInfo myTimer,
         [Queue(Constants.TaskQueueName)] QueueClient taskQueueClient,
         ILogger log,
         ExecutionContext context)
@@ -62,7 +63,7 @@ public class SchedulerFunction
         logContext.TriggeredTasks = triggeredTasks;
 
         // Publish the triggered tasks to the task queue.
-        // The executor function will pick them up and execute them.
+        // The task processor function will pick them up and execute them.
         var failedEnqueueCount = 0;
 
         foreach (var task in triggeredTasks)
@@ -72,7 +73,7 @@ public class SchedulerFunction
                 var taskJson = JsonSerializer.Serialize(task);
 
                 var now = this.Clock.UtcNow;
-                TimeSpan? delay = task.TriggerTimeUtc <= now
+                TimeSpan? delay = task.TriggerTimeUtc <= now || LauchImmediately
                     ? null
                     : task.TriggerTimeUtc - now;
 

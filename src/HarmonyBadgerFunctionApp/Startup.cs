@@ -1,6 +1,7 @@
-﻿using HarmonyBadgerFunctionApp.Scheduler;
-using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+
+using HarmonyBadgerFunctionApp.Scheduler;
 
 // Register the Startup type to prepare the DI container.
 [assembly: FunctionsStartup(typeof(HarmonyBadgerFunctionApp.Startup))]

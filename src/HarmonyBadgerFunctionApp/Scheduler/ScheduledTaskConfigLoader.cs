@@ -6,9 +6,10 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-using HarmonyBadgerFunctionApp.TaskModel;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
+
+using HarmonyBadgerFunctionApp.TaskModel;
 
 namespace HarmonyBadgerFunctionApp.Scheduler;
 
