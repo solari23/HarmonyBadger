@@ -2,12 +2,12 @@ using Azure.Storage.Queues.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
-using HarmonyBadgerFunctionApp.Scheduler;
 using HarmonyBadger.ConfigModels;
+using HarmonyBadger.Scheduler;
 
 using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
 
-namespace HarmonyBadgerFunctionApp.TaskProcessor;
+namespace HarmonyBadger.TaskProcessor;
 
 /// <summary>
 /// The HarmonyBadger_TaskProcessor function reads <see cref="TaskActivationDetails"/>

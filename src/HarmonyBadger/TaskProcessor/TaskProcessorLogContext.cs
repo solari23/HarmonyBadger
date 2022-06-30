@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 using HarmonyBadger.ConfigModels;
 
-namespace HarmonyBadgerFunctionApp.TaskProcessor;
+namespace HarmonyBadger.TaskProcessor;
 
 /// <summary>
 /// Tracks data during <see cref="TaskProcessorFunction"/> execution for eventual logging.

@@ -1,6 +1,6 @@
 ﻿using TimeZoneConverter;
 
-namespace HarmonyBadgerFunctionApp;
+namespace HarmonyBadger;
 
 /// <summary>
 /// A collection of helpers for dealing with time.

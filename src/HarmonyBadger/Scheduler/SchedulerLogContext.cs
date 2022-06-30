@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 using HarmonyBadger.ConfigModels;
 
-namespace HarmonyBadgerFunctionApp.Scheduler;
+namespace HarmonyBadger.Scheduler;
 
 /// <summary>
 /// Tracks data during <see cref="SchedulerFunction"/> execution for eventual logging.

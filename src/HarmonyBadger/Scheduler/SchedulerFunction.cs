@@ -8,7 +8,7 @@ using HarmonyBadger.ConfigModels;
 
 using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
 
-namespace HarmonyBadgerFunctionApp.Scheduler;
+namespace HarmonyBadger.Scheduler;
 
 /// <summary>
 /// The HarmonyBadger_Scheduler function implements the logic for

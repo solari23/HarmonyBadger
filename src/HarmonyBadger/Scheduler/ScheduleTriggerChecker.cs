@@ -2,7 +2,7 @@
 
 using HarmonyBadger.ConfigModels;
 
-namespace HarmonyBadgerFunctionApp.Scheduler;
+namespace HarmonyBadger.Scheduler;
 
 /// <summary>
 /// Helper class that checks <see cref="ScheduledTask"/> objects

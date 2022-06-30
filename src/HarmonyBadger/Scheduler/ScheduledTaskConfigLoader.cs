@@ -8,7 +8,7 @@ using HarmonyBadger.ConfigModels;
 
 using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
 
-namespace HarmonyBadgerFunctionApp.Scheduler;
+namespace HarmonyBadger.Scheduler;
 
 /// <summary>
 /// Interface for a utility that loads <see cref="ScheduledTask"/> configurations.

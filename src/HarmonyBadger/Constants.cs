@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace HarmonyBadgerFunctionApp;
+namespace HarmonyBadger;
 
 /// <summary>
 /// A collection of constants used throughout the application.
