@@ -20,16 +20,16 @@ public class TaskProcessorFunction
     /// Creates a new instance of the <see cref="TaskProcessorFunction"/> class.
     /// </summary>
     public TaskProcessorFunction(
-        IScheduledTaskConfigLoader taskConfigLoader,
+        IConfigProvider configProvider,
         IClock clock,
         ITaskHandlerFactory taskHandlerFactory)
     {
-        this.TaskConfigLoader = taskConfigLoader;
+        this.ConfigProvider = configProvider;
         this.Clock = clock;
         this.TaskHandlerFactory = taskHandlerFactory;
     }
 
-    private IScheduledTaskConfigLoader TaskConfigLoader { get; }
+    private IConfigProvider ConfigProvider { get; }
 
     private IClock Clock { get; }
 

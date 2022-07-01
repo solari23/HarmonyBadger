@@ -4,7 +4,6 @@ using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration.UserSecrets;
 using Microsoft.Extensions.DependencyInjection;
 
-using HarmonyBadger.Scheduler;
 using HarmonyBadger.TaskProcessor.TaskHandlers;
 
 // Register the Startup type to prepare the DI container.
@@ -20,8 +19,8 @@ public class Startup : FunctionsStartup
     /// <inheritdoc />
     public override void Configure(IFunctionsHostBuilder builder)
     {
-        builder.Services.AddTransient<IScheduledTaskConfigLoader, ScheduledTaskConfigLoader>();
         builder.Services.AddTransient<IClock, Clock>();
+        builder.Services.AddScoped<IConfigProvider, ConfigProvider>();
         builder.Services.AddTransient<ITaskHandlerFactory, TaskHandlerFactory>();
 
 #if DEBUG

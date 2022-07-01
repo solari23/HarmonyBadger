@@ -1,43 +1,76 @@
 ﻿using System.Security.Cryptography;
 using System.Text.Json;
 
-using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 using HarmonyBadger.ConfigModels;
 
-using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
-
-namespace HarmonyBadger.Scheduler;
+namespace HarmonyBadger;
 
 /// <summary>
-/// Interface for a utility that loads <see cref="ScheduledTask"/> configurations.
+/// Interface for a utility that loads configurations related to scheduled tasks.
 /// </summary>
-public interface IScheduledTaskConfigLoader
+public interface IConfigProvider
 {
     /// <summary>
-    /// Loads <see cref="ScheduledTask"/> configurations.
+    /// Gets all <see cref="ScheduledTask"/> configurations.
     /// </summary>
     /// <param name="logger">A helper used for logging telemetry.</param>
-    /// <param name="azureFunctionContext">The azure function execution context.</param>
     /// <returns>The loaded <see cref="ScheduledTask"/> configurations.</returns>
-    Task<IReadOnlyCollection<ScheduledTask>> LoadScheduledTasksAsync(
-        ILogger logger,
-        ExecutionContext azureFunctionContext);
+    Task<IReadOnlyCollection<ScheduledTask>> GetScheduledTasksAsync(ILogger logger);
 }
 
 /// <summary>
-/// Loads <see cref="ScheduledTask"/> configurations from the directory
-/// specified by <see cref="Constants.TaskConfigsDirectoryName"/>.
+/// Loads configurations related to scheduled tasks from the directory specified
+/// by <see cref="Constants.TaskConfigsDirectoryName"/>.
 /// </summary>
-public class ScheduledTaskConfigLoader : IScheduledTaskConfigLoader
+public class ConfigProvider : IConfigProvider
 {
-    /// <inheritdoc />
-    public async Task<IReadOnlyCollection<ScheduledTask>> LoadScheduledTasksAsync(
-        ILogger logger,
-        ExecutionContext azureFunctionContext)
+    /// <summary>
+    /// Creates a new instance of the <see cref="ConfigProvider"/> class.
+    /// </summary>
+    /// <param name="azureFunctionContext">DI-injected information about the Azure Function context.</param>
+    public ConfigProvider(IOptions<ExecutionContextOptions> azureFunctionContext)
     {
-        var configDirectoryPath = GetTaskConfigDirectoryPath(azureFunctionContext);
+        this.ConfigDirectoryPath = Path.Combine(
+            azureFunctionContext.Value.AppDirectory,
+            Constants.TaskConfigsDirectoryName);
+    }
+
+    private string ConfigDirectoryPath { get; }
+
+    private readonly SemaphoreSlim loadLock = new SemaphoreSlim(1);
+
+    private List<ScheduledTask> ScheduledTasks { get; set; }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyCollection<ScheduledTask>> GetScheduledTasksAsync(ILogger logger)
+    {
+        if (this.ScheduledTasks is null)
+        {
+            try
+            {
+                loadLock.Wait();
+                if (this.ScheduledTasks is null)
+                {
+                    this.ScheduledTasks = await LoadScheduledTasksFromDiskAsync(this.ConfigDirectoryPath, logger);
+                }
+            }
+            finally
+            {
+                loadLock.Release();
+            }
+        }
+
+        return this.ScheduledTasks;
+    }
+
+    private static async Task<List<ScheduledTask>> LoadScheduledTasksFromDiskAsync(string configDirectoryPath, ILogger logger)
+    {
+        using var hasher = SHA256.Create();
+
         var configFilePaths = Directory.EnumerateFiles(
             configDirectoryPath,
             $"*{Constants.ScheduledTaskConfigFileExtension}",
@@ -45,8 +78,6 @@ public class ScheduledTaskConfigLoader : IScheduledTaskConfigLoader
             {
                 MatchCasing = MatchCasing.CaseInsensitive
             });
-
-        using var hasher = SHA256.Create();
 
         var loadFailures = new List<(string file, Exception e)>();
         var loadedTasks = new List<ScheduledTask>();
@@ -83,13 +114,8 @@ public class ScheduledTaskConfigLoader : IScheduledTaskConfigLoader
             logger.LogMetric(Constants.MetricNames.LoadScheduleConfigFailed, loadFailures.Count);
         }
 
-        return loadedTasks.AsReadOnly();
+        return loadedTasks;
     }
-
-    private static string GetTaskConfigDirectoryPath(ExecutionContext context)
-        => Path.Combine(
-            context.FunctionAppDirectory,
-            Constants.TaskConfigsDirectoryName);
 
     private static async Task<string> GetSha256ChecksumAsync(SHA256 hasher, Stream dataStream)
     {
