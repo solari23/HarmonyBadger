@@ -11,7 +11,7 @@
     }
   ],
   "Task": {
-    "TaskKind": "Test",
+    "TaskKind": "DiscordReminder",
     "DebugMessage": "Hello World, Test2!"
   }
 }

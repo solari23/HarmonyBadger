@@ -24,6 +24,7 @@ public class TaskHandlerFactory : ITaskHandlerFactory
     public ITaskHandler CreateHandler(TaskKind taskKind) => taskKind switch
     {
         TaskKind.Test => new TestTaskHander(),
+        TaskKind.DiscordReminder => new DiscordReminderTaskHandler(),
         _ => throw new NotImplementedException($"No handler is defined for {taskKind} tasks."),
     };
 }
