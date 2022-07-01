@@ -18,6 +18,11 @@ public static class Constants
     public const string ScheduledTaskConfigFileExtension = ".schedule.json";
 
     /// <summary>
+    /// The extension used to identify Discord recipient configuration files.
+    /// </summary>
+    public const string DiscordRecipientConfigFileExtension = ".discordrecipients.json";
+
+    /// <summary>
     /// The maximum number of times a schedule can be triggered during a single
     /// invocation of the scheduler function.
     /// </summary>
@@ -46,6 +51,11 @@ public static class Constants
         /// A metric logged when loading a schedule config fails.
         /// </summary>
         public const string LoadScheduleConfigFailed = nameof(LoadScheduleConfigFailed);
+
+        /// <summary>
+        /// A metric logged when loading a Discord recipients config fails.
+        /// </summary>
+        public const string LoadDiscordRecipientConfigFailed = nameof(LoadDiscordRecipientConfigFailed);
 
         /// <summary>
         /// A metric logged when enqueuing a triggered task fails.

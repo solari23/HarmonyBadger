@@ -1,0 +1,17 @@
+{
+  "IsEnabled": true,
+  "Schedule": [
+    {
+      "ScheduleKind": "Cron",
+      "Expression": "0 * * * *"
+    }
+  ],
+  "Task": {
+    "TaskKind": "DiscordReminder",
+    "Message": "Reminder: Hello!",
+    "Recipient": {
+      "GuildId": 102938,
+      "ChannelId": 1337
+    }
+  }
+}

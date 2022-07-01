@@ -1,5 +1,5 @@
 {
-  "IsEnabled": true,
+  "IsEnabled": false,
   "Schedule": [
     {
       "ScheduleKind": "Daily",
@@ -11,7 +11,7 @@
     }
   ],
   "Task": {
-    "TaskKind": "DiscordReminder",
+    "TaskKind": "Test",
     "DebugMessage": "Hello World, Test2!"
   }
 }

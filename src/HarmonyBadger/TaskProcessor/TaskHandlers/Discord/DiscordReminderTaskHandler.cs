@@ -9,11 +9,30 @@ namespace HarmonyBadger.TaskProcessor.TaskHandlers;
 /// </summary>
 public class DiscordReminderTaskHandler : TaskHandlerBase<DiscordReminderTask>
 {
-    /// <inheritdoc />
-    protected override Task HandleAsync(DiscordReminderTask task, ILogger log)
+    /// <summary>
+    /// Creates a new instance of the <see cref="DiscordReminderTaskHandler"/> class.
+    /// </summary>
+    public DiscordReminderTaskHandler(IConfigProvider configProvider) : base(configProvider)
     {
-        // TODO: Implement task handling.
+        // Empty.
+    }
+
+    /// <inheritdoc />
+    protected override async Task HandleAsync(DiscordReminderTask task, ILogger log)
+    {
+        var recipient = task.Recipient;
+
+        if (!string.IsNullOrWhiteSpace(task.RecipientName))
+        {
+            recipient = await this.ConfigProvider.GetNamedDiscordRecipientAsync(task.RecipientName, log);
+
+            if (recipient is null)
+            {
+                throw new Exception($"Named recipient {task.RecipientName} not found.");
+            }
+        }
+
+        // TODO: Implement calling Discord APIs.
         log.LogInformation("[HANDLING DISCORD REMINDER TASK]");
-        return Task.CompletedTask;
     }
 }

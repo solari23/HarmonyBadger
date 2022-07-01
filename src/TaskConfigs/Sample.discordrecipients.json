@@ -1,0 +1,10 @@
+{
+    "R1": {
+        "GuildId": 12345,
+        "ChannelId": 54321
+    },
+    "R2": {
+        "GuildId": 102938,
+        "ChannelId": 1337
+    }
+}
