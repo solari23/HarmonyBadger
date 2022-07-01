@@ -33,6 +33,7 @@ public class TaskPolymorphicJsonConverter : JsonConverter<ITask>
                 return kind switch
                 {
                     TaskKind.Test => JsonSerializer.Deserialize<TestTask>(rootElement, options),
+                    TaskKind.DiscordReminder => JsonSerializer.Deserialize<DiscordReminderTask>(rootElement, options),
                     _ => throw new JsonException($"Task kind '{kind}' is not currently supported"),
                 };
             }
@@ -49,6 +50,7 @@ public class TaskPolymorphicJsonConverter : JsonConverter<ITask>
         var serialiationType = value.TaskKind switch
         {
             TaskKind.Test => typeof(TestTask),
+            TaskKind.DiscordReminder => typeof(DiscordReminderTask),
             _ => throw new JsonException($"Task kind '{value.TaskKind}' is not currently supported"),
         };
 
