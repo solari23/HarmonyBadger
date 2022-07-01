@@ -29,14 +29,14 @@ public class SchedulerFunction
     /// Creates a new instance of the <see cref="SchedulerFunction"/> class.
     /// </summary>
     public SchedulerFunction(
-        IScheduledTaskConfigLoader taskConfigLoader,
+        IConfigProvider configProvider,
         IClock clock)
     {
-        this.TaskConfigLoader = taskConfigLoader;
+        this.ConfigProvider = configProvider;
         this.Clock = clock;
     }
 
-    private IScheduledTaskConfigLoader TaskConfigLoader { get; }
+    private IConfigProvider ConfigProvider { get; }
 
     private IClock Clock { get; }
 
@@ -53,7 +53,7 @@ public class SchedulerFunction
         var logContext = new SchedulerLogContext(context.InvocationId, this.Clock);
 
         // Load the Scheduled Task configs.
-        var configs = await this.TaskConfigLoader.LoadScheduledTasksAsync(log, context);
+        var configs = await this.ConfigProvider.GetScheduledTasksAsync(log);
         logContext.LoadedTaskConfigs = configs;
 
         // Evaluate all the configs' schedules.
