@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 
 using HarmonyBadger.ConfigModels;
 using HarmonyBadger.Scheduler;
+using HarmonyBadger.TaskProcessor.TaskHandlers;
 
 using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
 
@@ -20,15 +21,19 @@ public class TaskProcessorFunction
     /// </summary>
     public TaskProcessorFunction(
         IScheduledTaskConfigLoader taskConfigLoader,
-        IClock clock)
+        IClock clock,
+        ITaskHandlerFactory taskHandlerFactory)
     {
         this.TaskConfigLoader = taskConfigLoader;
         this.Clock = clock;
+        this.TaskHandlerFactory = taskHandlerFactory;
     }
 
     private IScheduledTaskConfigLoader TaskConfigLoader { get; }
 
     private IClock Clock { get; }
+
+    private ITaskHandlerFactory TaskHandlerFactory { get; }
 
     /// <summary>
     /// The entry points for the HarmonyBadger_TaskProcessor function.
@@ -41,7 +46,25 @@ public class TaskProcessorFunction
     {
         var logContext = new TaskProcessorLogContext(context.InvocationId, this.Clock);
 
-        TaskActivationDetails task = null;
+        try
+        {
+            await this.HandleMessageAsync(queueMessage, log, logContext);
+        }
+        catch (Exception)
+        {
+            // Handling the task failed; logging is handled in HandleMessageAsync.
+            // We'll swallow the error -- Azure Function-level retry is not needed.
+        }
+
+        logContext.Publish(log);
+    }
+
+    private async Task HandleMessageAsync(
+        QueueMessage queueMessage,
+        ILogger log,
+        TaskProcessorLogContext logContext)
+    {
+        TaskActivationDetails task;
 
         try
         {
@@ -53,11 +76,20 @@ public class TaskProcessorFunction
             var error = $"Deserializing message {queueMessage.MessageId} failed.";
             log.LogError(e, error);
             logContext.TaskProcessingFailureReason = error;
+            throw;
         }
 
-        // TODO: Implement task handlers to execute tasks.
-        await Task.Yield();
-
-        logContext.Publish(log);
+        try
+        {
+            var handler = this.TaskHandlerFactory.CreateHandler(task.Task.TaskKind);
+            await handler.HandleAsync(task.Task, log);
+        }
+        catch (Exception e)
+        {
+            var error = $"";
+            log.LogError(e, error);
+            logContext.TaskProcessingFailureReason = error;
+            throw;
+        }
     }
 }
