@@ -59,7 +59,7 @@ public class TaskProcessorLogContext
 
         if (this.Task is not null)
         {
-            builder.Append($" Recived task {this.Task.ToLogString()}.");
+            builder.Append($" Received task {this.Task.ToLogString()}.");
         }
 
         if (!string.IsNullOrEmpty(this.TaskProcessingFailureReason))

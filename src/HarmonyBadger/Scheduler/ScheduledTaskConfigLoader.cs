@@ -18,7 +18,7 @@ public interface IScheduledTaskConfigLoader
     /// <summary>
     /// Loads <see cref="ScheduledTask"/> configurations.
     /// </summary>
-    /// <param name="logger">Helper used for logging telemetry.</param>
+    /// <param name="logger">A helper used for logging telemetry.</param>
     /// <param name="azureFunctionContext">The azure function execution context.</param>
     /// <returns>The loaded <see cref="ScheduledTask"/> configurations.</returns>
     Task<IReadOnlyCollection<ScheduledTask>> LoadScheduledTasksAsync(

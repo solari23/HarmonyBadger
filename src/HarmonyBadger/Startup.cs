@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 
 using HarmonyBadger.Scheduler;
+using HarmonyBadger.TaskProcessor.TaskHandlers;
 
 // Register the Startup type to prepare the DI container.
 [assembly: FunctionsStartup(typeof(HarmonyBadger.Startup))]
@@ -18,5 +19,6 @@ public class Startup : FunctionsStartup
     {
         builder.Services.AddTransient<IScheduledTaskConfigLoader, ScheduledTaskConfigLoader>();
         builder.Services.AddTransient<IClock, Clock>();
+        builder.Services.AddTransient<ITaskHandlerFactory, TaskHandlerFactory>();
     }
 }
