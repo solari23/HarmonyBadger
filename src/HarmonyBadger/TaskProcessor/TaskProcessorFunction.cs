@@ -3,7 +3,6 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
 using HarmonyBadger.ConfigModels;
-using HarmonyBadger.Scheduler;
 using HarmonyBadger.TaskProcessor.TaskHandlers;
 
 using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
@@ -20,16 +19,12 @@ public class TaskProcessorFunction
     /// Creates a new instance of the <see cref="TaskProcessorFunction"/> class.
     /// </summary>
     public TaskProcessorFunction(
-        IConfigProvider configProvider,
         IClock clock,
         ITaskHandlerFactory taskHandlerFactory)
     {
-        this.ConfigProvider = configProvider;
         this.Clock = clock;
         this.TaskHandlerFactory = taskHandlerFactory;
     }
-
-    private IConfigProvider ConfigProvider { get; }
 
     private IClock Clock { get; }
 

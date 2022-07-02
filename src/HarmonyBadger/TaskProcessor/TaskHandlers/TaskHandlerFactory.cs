@@ -20,11 +20,21 @@ public interface ITaskHandlerFactory
 /// <inheritdoc/>
 public class TaskHandlerFactory : ITaskHandlerFactory
 {
+    /// <summary>
+    /// Creates a new instance of the <see cref="TaskHandlerFactory"/> class.
+    /// </summary>
+    public TaskHandlerFactory(IConfigProvider configProvider)
+    {
+        this.ConfigProvider = configProvider;
+    }
+
+    private IConfigProvider ConfigProvider { get; }
+
     /// <inheritdoc />
     public ITaskHandler CreateHandler(TaskKind taskKind) => taskKind switch
     {
-        TaskKind.Test => new TestTaskHander(),
-        TaskKind.DiscordReminder => new DiscordReminderTaskHandler(),
+        TaskKind.Test => new TestTaskHander(this.ConfigProvider),
+        TaskKind.DiscordReminder => new DiscordReminderTaskHandler(this.ConfigProvider),
         _ => throw new NotImplementedException($"No handler is defined for {taskKind} tasks."),
     };
 }

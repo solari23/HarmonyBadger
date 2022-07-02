@@ -1,0 +1,16 @@
+{
+  "IsEnabled": true,
+  "Schedule": [
+    {
+      "ScheduleKind": "Cron",
+      "Expression": "0 * * * *"
+    }
+  ],
+  "Task": {
+    "TaskKind": "DiscordReminder",
+    "Message": "Reminder: Hello, named recipient!",
+
+    // References a recipient defined in Sample.discordrecipients.json.
+    "RecipientName": "R1"
+  }
+}

@@ -15,5 +15,5 @@ $harmonyBadgerProjFile = Resolve-Path "$PSScriptRoot/../src/HarmonyBadger/Harmon
 dotnet user-secrets init --id $USER_SECRETS_ID -p $harmonyBadgerProjFile
 
 # Fetch and set the secret to the local store
-$secret = az keyvault secret show --vault-name $KEYVAULT_NAME --name TestSecret --query value
-dotnet user-secrets --id $USER_SECRETS_ID -p $harmonyBadgerProjFile set "TEST_SECRET" $secret
+$secret = az keyvault secret show --vault-name $KEYVAULT_NAME --name DiscordBotSecret --query value
+dotnet user-secrets --id $USER_SECRETS_ID -p $harmonyBadgerProjFile set "DISCORD_BOT_SECRET" $secret
