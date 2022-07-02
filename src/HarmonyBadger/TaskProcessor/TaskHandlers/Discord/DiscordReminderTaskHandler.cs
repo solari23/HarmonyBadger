@@ -64,5 +64,6 @@ public class DiscordReminderTaskHandler : TaskHandlerBase<DiscordReminderTask>
         }
 
         await channel.SendMessageAsync(task.Message);
+        log.LogInformation($"Delivered reminder message to channel {channel.Name}");
     }
 }
