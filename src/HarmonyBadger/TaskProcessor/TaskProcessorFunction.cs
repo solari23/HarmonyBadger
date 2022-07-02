@@ -81,7 +81,7 @@ public class TaskProcessorFunction
         }
         catch (Exception e)
         {
-            var error = $"";
+            var error = $"Executing task {task.ToLogString()} (from message {queueMessage.MessageId}) failed.";
             log.LogError(e, error);
             logContext.TaskProcessingFailureReason = error;
             throw;

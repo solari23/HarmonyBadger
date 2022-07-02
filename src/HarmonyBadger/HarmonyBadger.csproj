@@ -6,6 +6,7 @@
         <UserSecretsId>HarmonyBadgerDevSecrets</UserSecretsId>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="Discord.Net.Rest" Version="3.7.2" />
         <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
         <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage.Queues" Version="5.0.1" />
         <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />

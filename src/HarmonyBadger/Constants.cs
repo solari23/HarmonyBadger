@@ -62,4 +62,15 @@ public static class Constants
         /// </summary>
         public const string EnqueueTaskFailed = nameof(EnqueueTaskFailed);
     }
+
+    /// <summary>
+    /// A collection of names of environment variables containing secrets.
+    /// </summary>
+    public static class SecretEnvVarNames
+    {
+        /// <summary>
+        /// The environment variable holding the Discord bot app's secret key.
+        /// </summary>
+        public const string DiscordBotSecretKey = "DISCORD_BOT_SECRET";
+    }
 }
