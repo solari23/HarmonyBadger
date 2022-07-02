@@ -18,12 +18,12 @@ public class DiscordRecipient : IValidatableObject, IJsonOnDeserialized
     /// <summary>
     /// The GuildId (aka server) to deliever the message to.
     /// </summary>
-    public long? GuildId { get; set; }
+    public ulong? GuildId { get; set; }
 
     /// <summary>
     /// The text channel to deliver the message to.
     /// </summary>
-    public long? ChannelId { get; set; }
+    public ulong? ChannelId { get; set; }
 
     /// <inheritdoc />
     public IEnumerable<ValidationResult> Validate(ValidationContext _)
