@@ -78,6 +78,7 @@ public class SchedulerFunction
                     : task.TriggerTimeUtc - now;
 
                 await taskQueueClient.SendMessageAsync(taskJson, delay);
+                log.LogMetric(Constants.MetricNames.TaskQueued, 1);
             }
             catch (Exception ex)
             {
