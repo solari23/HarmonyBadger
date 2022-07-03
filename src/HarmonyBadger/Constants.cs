@@ -61,6 +61,21 @@ public static class Constants
         /// A metric logged when enqueuing a triggered task fails.
         /// </summary>
         public const string EnqueueTaskFailed = nameof(EnqueueTaskFailed);
+
+        /// <summary>
+        /// A metric logged when executing a task fails.
+        /// </summary>
+        public const string TaskExecutionFailed = nameof(TaskExecutionFailed);
+
+        /// <summary>
+        /// A metric logged when a task is succesfully added to the task queue.
+        /// </summary>
+        public const string TaskQueued = nameof(TaskQueued);
+
+        /// <summary>
+        /// A metric logged when a task is succesfully executed by the task processor.
+        /// </summary>
+        public const string TaskExecuted = nameof(TaskExecuted);
     }
 
     /// <summary>

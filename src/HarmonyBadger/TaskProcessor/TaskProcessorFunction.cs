@@ -44,11 +44,13 @@ public class TaskProcessorFunction
         try
         {
             await this.HandleMessageAsync(queueMessage, log, logContext);
+            log.LogMetric(Constants.MetricNames.TaskExecuted, 1);
         }
         catch (Exception)
         {
-            // Handling the task failed; logging is handled in HandleMessageAsync.
+            // Handling the task failed; error detail logging is handled in HandleMessageAsync.
             // We'll swallow the error -- Azure Function-level retry is not needed.
+            log.LogMetric(Constants.MetricNames.TaskExecutionFailed, 1);
         }
 
         logContext.Publish(log);
