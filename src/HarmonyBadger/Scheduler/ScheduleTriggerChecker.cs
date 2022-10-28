@@ -64,7 +64,8 @@ public class ScheduleTriggerChecker
                 .SelectMany(c => c.GetNextOccurrences(startLocal, endLocal)) // Evaluate the cron objects for the specified timespan
                 .OrderBy(time => time)
                 .Take(Constants.MaxTriggersPerSchedule) // Limit how many times the task can trigger
-                .Select(time => TimeHelper.ConvertToUtc(time)); // Convert the timestamps to UTC
+                .Select(time => TimeHelper.ConvertToUtc(time)) // Convert the timestamps to UTC
+                .Distinct(); // De-dup in case two schedules fire for the same time.
 
             if (triggerTimesUtc.Any())
             {

@@ -3,7 +3,7 @@
   "Schedule": [
     {
       "ScheduleKind": "Daily",
-      "Time": "11:05 PM"
+      "Time": "3:00 PM"
     },
     {
       "ScheduleKind": "Cron",

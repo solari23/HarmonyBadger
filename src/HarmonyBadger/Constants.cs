@@ -25,6 +25,9 @@ public static class Constants
     /// <summary>
     /// The maximum number of times a schedule can be triggered during a single
     /// invocation of the scheduler function.
+    ///
+    /// Since the scheduler runs hourly, this restricts a job to be triggered
+    /// at most 4 times during the hour.
     /// </summary>
     public const int MaxTriggersPerSchedule = 4;
 
