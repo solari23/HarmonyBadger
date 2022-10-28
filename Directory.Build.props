@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- This file is automatically imported for all MSBuild projects in the directory. -->
+<Project>
+
+  <!--
+      Add build version infromation to the output binaries.
+
+      The values will be pulled from the Azure DevOps pipeline during official builds.
+      Otherwise, we define some default values for local builds.
+  -->
+  <PropertyGroup>
+    <Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">1.0.0-LOCAL</Version>
+    <Version Condition=" '$(BUILD_BUILDNUMBER)' != '' ">$(BUILD_BUILDNUMBER)</Version>
+  </PropertyGroup>
+  
+</Project>
