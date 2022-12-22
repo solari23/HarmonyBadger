@@ -15,6 +15,11 @@
       "Time": "11 PM"
     },
     {
+      "ScheduleKind": "Monthly",
+      "DayOfMonth": 21,
+      "Time": "14:23"
+    },
+    {
       "ScheduleKind": "LastDayOfMonth",
       "Time": "18:00"
     }

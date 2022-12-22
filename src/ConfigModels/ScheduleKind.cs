@@ -15,17 +15,23 @@ public enum ScheduleKind
     /// A schedule set to occur once per day at a fixed time.
     /// See <see cref="DailySchedule"/> for more details.
     /// </summary>
-    Daily = 1,
+    Daily,
 
     /// <summary>
     /// A schedule set to occur once per week on a fixed day at a fixed time.
     /// See <see cref="WeeklySchedule"/> for more details.
     /// </summary>
-    Weekly = 2,
+    Weekly,
+
+    /// <summary>
+    /// A schedule set to occur on the same day every month.
+    /// See <see cref="MonthlySchedule"/> for more details.
+    /// </summary>
+    Monthly,
 
     /// <summary>
     /// A schedule set to occur on the last day of the month at a fixed time.
     /// See <see cref="LastDayOfMonthSchedule"/> for more details.
     /// </summary>
-    LastDayOfMonth = 3,
+    LastDayOfMonth,
 }
