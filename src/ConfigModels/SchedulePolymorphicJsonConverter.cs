@@ -36,6 +36,7 @@ public class SchedulePolymorphicJsonConverter : JsonConverter<ISchedule>
                     ScheduleKind.Cron => JsonSerializer.Deserialize<CronSchedule>(rootElement, options),
                     ScheduleKind.Daily => JsonSerializer.Deserialize<DailySchedule>(rootElement, options),
                     ScheduleKind.Weekly => JsonSerializer.Deserialize<WeeklySchedule>(rootElement, options),
+                    ScheduleKind.Monthly => JsonSerializer.Deserialize<MonthlySchedule>(rootElement, options),
                     ScheduleKind.LastDayOfMonth => JsonSerializer.Deserialize<LastDayOfMonthSchedule>(rootElement, options),
                     _ => throw new JsonException($"Schedule kind '{kind}' is not currently supported"),
                 };
