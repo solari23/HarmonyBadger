@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration.UserSecrets;
 using Microsoft.Extensions.DependencyInjection;
 
 using HarmonyBadger.TaskProcessor.TaskHandlers;
+using Microsoft.Extensions.Configuration;
 
 // Register the Startup type to prepare the DI container.
 [assembly: FunctionsStartup(typeof(HarmonyBadger.Startup))]
@@ -16,6 +17,16 @@ namespace HarmonyBadger;
 /// </summary>
 public class Startup : FunctionsStartup
 {
+    /// <inheritdoc />
+    public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
+    {
+        FunctionsHostBuilderContext context = builder.GetContext();
+        builder.ConfigurationBuilder
+            .AddJsonFile(Path.Combine(context.ApplicationRootPath, "appsettings.json"), optional: true, reloadOnChange: false)
+            .AddJsonFile(Path.Combine(context.ApplicationRootPath, $"appsettings.{context.EnvironmentName}.json"), optional: true, reloadOnChange: false)
+            .AddEnvironmentVariables();
+    }
+
     /// <inheritdoc />
     public override void Configure(IFunctionsHostBuilder builder)
     {

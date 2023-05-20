@@ -47,6 +47,9 @@ stages:
       - checkout: harmony_badger_config
         displayName: 'Checkout Private Config Repo'
 
+      - script: cp $(Build.SourcesDirectory)/HarmonyBadger.Config/appsettings.Production.json $(srcDir)
+        displayName: 'Copy Production AppSettings'
+
       # Copy configurations from the private repo into the corresponding locations in the primary repo.
       - script: cp $(Build.SourcesDirectory)/HarmonyBadger.Config/TaskConfigs/* $(srcDir)/TaskConfigs
         displayName: 'Copy Private Configs'
