@@ -3,19 +3,26 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace HarmonyBadger.IdentityAuthorization;
 
 public class AuthEndpointFunction
 {
+    public AuthEndpointFunction(IConfiguration appSettings)
+    {
+        this.AppSettings = appSettings;
+    }
+
+    private IConfiguration AppSettings { get; }
+
     [FunctionName("HarmonyBadger_AuthEndpoint_Get")]
     public IActionResult RunGet(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authorization")] HttpRequest req,
-        ILogger log)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authorization")] HttpRequest req)
     {
         var authorizeQueryBuilder = new QueryStringBuilder();
-        authorizeQueryBuilder.AddParameter("client_id", "49ad3364-fa8b-4b1f-9761-5a6bc32cacf2");
+        authorizeQueryBuilder.AddParameter("client_id", this.AppSettings.MSIdentityAppId());
         authorizeQueryBuilder.AddParameter("response_type", "code+id_token", urlEncode: false);
         authorizeQueryBuilder.AddParameter("redirect_uri", $"https://{req.Host}/authorization");
         authorizeQueryBuilder.AddParameter("scope", "openid+email+offline_access+mail.send", urlEncode: false);
@@ -57,5 +64,17 @@ public class AuthEndpointFunction
         var authCode = requestForm["code"].First();
 
         return new OkObjectResult("Refresh Token Saved.");
+    }
+
+    [FunctionName("HarmonyBadger_AuthEndpoint_Test")]
+    public IActionResult Test(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "test")] HttpRequest req)
+    {
+        // Temporary function to help validate appsettings setup.
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"TestSetting1 => {this.AppSettings.GetValue<string>("TestSetting1")}");
+        sb.AppendLine($"TestSetting2 => {this.AppSettings.GetValue<string>("TestSetting2")}");
+        sb.AppendLine($"TestSetting3 => {this.AppSettings.GetValue<string>("TestSetting3")}");
+        return new OkObjectResult(sb.ToString());
     }
 }
