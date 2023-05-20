@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HarmonyBadger", "HarmonyBadger\HarmonyBadger.csproj", "{89FFF195-41F7-4A9A-9EBD-5B25E3DEC1C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigModels", "ConfigModels\ConfigModels.csproj", "{CCE98F0E-9D50-4FC4-8104-1A9FEC05DB5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigModels", "ConfigModels\ConfigModels.csproj", "{CCE98F0E-9D50-4FC4-8104-1A9FEC05DB5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
