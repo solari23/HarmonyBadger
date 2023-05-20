@@ -2,7 +2,7 @@
   "profiles": {
     "HarmonyBadgerFunctionApp": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7296",
+      "commandLineArgs": "--port 7296 --useHttps --cert $(ProjectDir)\\..\\DevCert.pfx --password 123",
       "launchBrowser": false
     }
   }
