@@ -1,11 +1,11 @@
 ﻿using System.Text.Json;
 
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.UserSecrets;
 using Microsoft.Extensions.DependencyInjection;
 
 using HarmonyBadger.TaskProcessor.TaskHandlers;
-using Microsoft.Extensions.Configuration;
 
 // Register the Startup type to prepare the DI container.
 [assembly: FunctionsStartup(typeof(HarmonyBadger.Startup))]
