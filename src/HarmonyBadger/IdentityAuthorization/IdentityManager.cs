@@ -33,8 +33,8 @@ public interface IIdentityManager
     /// Redeems the given authorization code and stores the resulting refresh token.
     /// </summary>
     /// <param name="authCode">The authorization code to redeem.</param>
-    /// <returns>A result which of 'true' if the operation succeeded, or diagnostic error information if not.</returns>
-    Task<Result<bool>> RedeemAuthCodeAndSaveRefreshTokenAsync(string authCode);
+    /// <returns>A <see cref="Result"/> which indicates the outcome of the operation.</returns>
+    Task<Result> RedeemAuthCodeAndSaveRefreshTokenAsync(string authCode);
 }
 
 public class IdentityManager : IIdentityManager
@@ -108,7 +108,7 @@ public class IdentityManager : IIdentityManager
     }
 
     /// <inheritdoc />
-    public async Task<Result<bool>> RedeemAuthCodeAndSaveRefreshTokenAsync(string authCode)
+    public async Task<Result> RedeemAuthCodeAndSaveRefreshTokenAsync(string authCode)
     {
         var tokenCallResult = await this.MSIdentityClient.CallTokenEndpointAsync(
             MSIdentityClient.GrantType.AuthorizationCode,
@@ -116,10 +116,10 @@ public class IdentityManager : IIdentityManager
 
         if (tokenCallResult.IsError)
         {
-            return Result<bool>.FromError(tokenCallResult.Error.Messsage, tokenCallResult.Error.Detail);
+            return Result<bool>.FromError(tokenCallResult.Error);
         }
 
-        return Result<bool>.Success(true);
+        return Result.SuccessResult;
     }
 
     private static X509Certificate2 GetMSAppCert()
