@@ -4,90 +4,78 @@ using System.Runtime.CompilerServices;
 namespace HarmonyBadger;
 
 /// <summary>
-/// Encapsulates the result of an operation, which may be either some result of
-/// type <typeparamref name="TValue"/>, or some error.
+/// Encapsulates the outcome of an operation.
 /// </summary>
-/// <typeparam name="TValue"></typeparam>
-public class Result<TValue>
+public class Result
 {
     /// <summary>
-    /// Creates a <see cref="Result{TValue}"/> for an operation that successfully
-    /// completed and resulted in a value of type <typeparamref name="TValue"/>.
+    /// The default <see cref="Result"/> instance indicating a successful outcome.
     /// </summary>
-    /// <param name="value">The successful result value.</param>
-    /// <returns>The <see cref="Result{TValue}"/>.</returns>
-    [DebuggerStepThrough]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Result<TValue> Success(TValue value)
-        => new (value, null);
+    public static readonly Result SuccessResult = new (null);
 
     /// <summary>
-    /// Create a <see cref="Result{TValue}"/> representing an operation that failed.
+    /// Creates a <see cref="Result"/> for an operation that successfully completed.
     /// </summary>
-    /// <param name="message">A summary message that describes the error.</param>
-    /// <returns>The <see cref="Result{TValue}"/>.</returns>
+    /// <returns>The <see cref="Result"/>.</returns>
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Result<TValue> FromError(string message)
+    public static Result Success() => SuccessResult;
+
+    /// <summary>
+    /// Create a <see cref="Result"/> representing an operation that failed.
+    /// </summary>
+    /// <param name="message">A summary message that describes the error.</param>
+    /// <returns>The <see cref="Result"/>.</returns>
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Result FromError(string message)
         => FromError(message, null, null);
 
     /// <summary>
-    /// Create a <see cref="Result{TValue}"/> representing an operation that failed.
+    /// Create a <see cref="Result"/> representing an operation that failed.
     /// </summary>
     /// <param name="message">A summary message that describes the error.</param>
     /// <param name="detail">Detailed information about the error.</param>
-    /// <returns>The <see cref="Result{TValue}"/>.</returns>
+    /// <returns>The <see cref="Result"/>.</returns>
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Result<TValue> FromError(string message, string detail)
+    public static Result FromError(string message, string detail)
         => FromError(message, detail, null);
 
     /// <summary>
-    /// Create a <see cref="Result{TValue}"/> representing an operation that failed.
+    /// Create a <see cref="Result"/> representing an operation that failed.
     /// </summary>
     /// <param name="message">A summary message that describes the error.</param>
     /// <param name="exception">The exception that is the source of the error (if applicable).</param>
-    /// <returns>The <see cref="Result{TValue}"/>.</returns>
+    /// <returns>The <see cref="Result"/>.</returns>
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Result<TValue> FromError(string message, Exception exception)
+    public static Result FromError(string message, Exception exception)
         => FromError(message, null, exception);
 
     /// <summary>
-    /// Create a <see cref="Result{TValue}"/> representing an operation that failed.
+    /// Create a <see cref="Result"/> representing an operation that failed.
     /// </summary>
     /// <param name="message">A summary message that describes the error.</param>
     /// <param name="detail">Detailed information about the error.</param>
     /// <param name="exception">The exception that is the source of the error (if applicable).</param>
-    /// <returns>The <see cref="Result{TValue}"/>.</returns>
+    /// <returns>The <see cref="Result"/>.</returns>
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Result<TValue> FromError(string message, string detail, Exception exception)
+    public static Result FromError(string message, string detail, Exception exception)
         => FromError(errorInfoFactory(message, detail, exception));
 
     /// <summary>
     /// Create a <see cref="Result{TValue}"/> representing an operation that failed.
     /// </summary>
     /// <param name="error">Diagnostic infromation about the error.</param>
-    /// <returns>The <see cref="Result{TValue}"/>.</returns>
+    /// <returns>The <see cref="Result"/>.</returns>
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Result<TValue> FromError(ErrorInfo error)
-        => new (default, error);
+    public static Result FromError(ErrorInfo error)
+        => new (error);
 
-    /// <summary>
-    /// Casts the <see cref="Result{TValue}"/> to the underlying <typeparamref name="TValue"/>.
-    /// </summary>
-    /// <param name="result">The <see cref="Result{TValue}"/> to cast.</param>
-    /// </summary>
-    /// <exception cref="InvalidOperationException">
-    /// The <see cref="Result{TValue}"/> represents an error and does not contain a value.
-    /// </exception>
-    [DebuggerStepThrough]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator TValue(Result<TValue> result) => result.Value;
-
-    private static Func<string, string, Exception, ErrorInfo> errorInfoFactory;
+    protected static Func<string, string, Exception, ErrorInfo> errorInfoFactory;
 
     static Result()
     {
@@ -95,44 +83,24 @@ public class Result<TValue>
         RuntimeHelpers.RunClassConstructor(typeof(ErrorInfo).TypeHandle);
     }
 
-    private Result(TValue value, ErrorInfo error)
+    protected Result(ErrorInfo error)
     {
-        this.value = value;
         this.Error = error;
     }
 
-    private readonly TValue value;
-
     /// <summary>
-    /// Returns the resulting value of the operation in the case of success.
-    /// Otherwise, throws <see cref="InvalidOperationException"/> if the
-    /// <see cref="Result{TValue}"/> represents an error.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">
-    /// The <see cref="Result{TValue}"/> represents an error and does not contain a value.
-    /// </exception>
-    public TValue Value
-    {
-        get
-        {
-            if (this.IsError)
-            {
-                throw new InvalidOperationException(
-                    "The result indicates an error; no value is accessible.");
-            }
-
-            return value;
-        }
-    }
-
-    /// <summary>
-    /// Diagnostic information in the case where this <see cref="Result{TValue}"/>
+    /// Diagnostic information in the case where this <see cref="Result"/>
     /// represents an error, otherwise null.
     /// </summary>
     public ErrorInfo Error { get; }
 
     /// <summary>
-    /// True if this <see cref="Result{TValue}"/> represents an error, false otherwise.
+    /// True if this <see cref="Result"/> represents a successful outcome, false otherwise.
+    /// </summary>
+    public bool IsSuccess => this.Error is null;
+
+    /// <summary>
+    /// True if this <see cref="Result"/> represents an error, false otherwise.
     /// </summary>
     public bool IsError => this.Error is not null;
 
@@ -171,5 +139,119 @@ public class Result<TValue>
         /// The exception that is the source of the error (if applicable).
         /// </summary>
         public Exception Exception { get; }
+    }
+}
+
+/// <summary>
+/// Encapsulates the result of an operation, which may be either some result of
+/// type <typeparamref name="TValue"/>, or some error.
+/// </summary>
+/// <typeparam name="TValue"></typeparam>
+public class Result<TValue> : Result
+{
+    /// <summary>
+    /// Creates a <see cref="Result{TValue}"/> for an operation that successfully
+    /// completed and resulted in a value of type <typeparamref name="TValue"/>.
+    /// </summary>
+    /// <param name="value">The successful result value.</param>
+    /// <returns>The <see cref="Result{TValue}"/>.</returns>
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Result<TValue> Success(TValue value)
+        => new (value, null);
+
+    /// <summary>
+    /// Create a <see cref="Result{TValue}"/> representing an operation that failed.
+    /// </summary>
+    /// <param name="message">A summary message that describes the error.</param>
+    /// <returns>The <see cref="Result{TValue}"/>.</returns>
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static new Result<TValue> FromError(string message)
+        => FromError(message, null, null);
+
+    /// <summary>
+    /// Create a <see cref="Result{TValue}"/> representing an operation that failed.
+    /// </summary>
+    /// <param name="message">A summary message that describes the error.</param>
+    /// <param name="detail">Detailed information about the error.</param>
+    /// <returns>The <see cref="Result{TValue}"/>.</returns>
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static new Result<TValue> FromError(string message, string detail)
+        => FromError(message, detail, null);
+
+    /// <summary>
+    /// Create a <see cref="Result{TValue}"/> representing an operation that failed.
+    /// </summary>
+    /// <param name="message">A summary message that describes the error.</param>
+    /// <param name="exception">The exception that is the source of the error (if applicable).</param>
+    /// <returns>The <see cref="Result{TValue}"/>.</returns>
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static new Result<TValue> FromError(string message, Exception exception)
+        => FromError(message, null, exception);
+
+    /// <summary>
+    /// Create a <see cref="Result{TValue}"/> representing an operation that failed.
+    /// </summary>
+    /// <param name="message">A summary message that describes the error.</param>
+    /// <param name="detail">Detailed information about the error.</param>
+    /// <param name="exception">The exception that is the source of the error (if applicable).</param>
+    /// <returns>The <see cref="Result{TValue}"/>.</returns>
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static new Result<TValue> FromError(string message, string detail, Exception exception)
+        => FromError(errorInfoFactory(message, detail, exception));
+
+    /// <summary>
+    /// Create a <see cref="Result{TValue}"/> representing an operation that failed.
+    /// </summary>
+    /// <param name="error">Diagnostic infromation about the error.</param>
+    /// <returns>The <see cref="Result{TValue}"/>.</returns>
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static new Result<TValue> FromError(ErrorInfo error)
+        => new (default, error);
+
+    /// <summary>
+    /// Casts the <see cref="Result{TValue}"/> to the underlying <typeparamref name="TValue"/>.
+    /// </summary>
+    /// <param name="result">The <see cref="Result{TValue}"/> to cast.</param>
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// The <see cref="Result{TValue}"/> represents an error and does not contain a value.
+    /// </exception>
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static implicit operator TValue(Result<TValue> result) => result.Value;
+
+    private Result(TValue value, ErrorInfo error) : base(error)
+    {
+        this.value = value;
+    }
+
+    private readonly TValue value;
+
+    /// <summary>
+    /// Returns the resulting value of the operation in the case of success.
+    /// Otherwise, throws <see cref="InvalidOperationException"/> if the
+    /// <see cref="Result{TValue}"/> represents an error.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// The <see cref="Result{TValue}"/> represents an error and does not contain a value.
+    /// </exception>
+    public TValue Value
+    {
+        get
+        {
+            if (this.IsError)
+            {
+                throw new InvalidOperationException(
+                    "The result indicates an error; no value is accessible.");
+            }
+
+            return value;
+        }
     }
 }

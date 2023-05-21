@@ -68,7 +68,7 @@ public class AuthEndpointFunction
         var authorizedUserEmail = idTokenValidationResult.Value;
 
         var redeemResult = await this.IdentityManager.RedeemAuthCodeAndSaveRefreshTokenAsync(authCode);
-        if (redeemResult.IsError )
+        if (redeemResult.IsError)
         {
             log.LogError($"Redeeming auth code failed due to error: {redeemResult.Error.Messsage}\n Detail: {redeemResult.Error.Detail}");
         }
