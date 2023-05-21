@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration.UserSecrets;
 using Microsoft.Extensions.DependencyInjection;
 
 using HarmonyBadger.TaskProcessor.TaskHandlers;
+using HarmonyBadger.IdentityAuthorization;
 
 // Register the Startup type to prepare the DI container.
 [assembly: FunctionsStartup(typeof(HarmonyBadger.Startup))]
@@ -33,6 +34,8 @@ public class Startup : FunctionsStartup
         builder.Services.AddTransient<IClock, Clock>();
         builder.Services.AddScoped<IConfigProvider, ConfigProvider>();
         builder.Services.AddTransient<ITaskHandlerFactory, TaskHandlerFactory>();
+        builder.Services.AddSingleton<IIdentityManager, IdentityManager>();
+        builder.Services.AddMemoryCache();
 
 #if DEBUG
         LoadUserSecretsToEnvironmentVariables();

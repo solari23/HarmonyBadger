@@ -10,12 +10,15 @@ namespace HarmonyBadger.IdentityAuthorization;
 
 public class AuthEndpointFunction
 {
-    public AuthEndpointFunction(IConfiguration appSettings)
+    public AuthEndpointFunction(IConfiguration appSettings, IIdentityManager identityManager)
     {
         this.AppSettings = appSettings;
+        this.IdentityManager = identityManager;
     }
 
     private IConfiguration AppSettings { get; }
+
+    private IIdentityManager IdentityManager { get; }
 
     [FunctionName("HarmonyBadger_AuthEndpoint_Get")]
     public IActionResult RunGet(
@@ -63,7 +66,16 @@ public class AuthEndpointFunction
         var idToken = requestForm["id_token"].First();
         var authCode = requestForm["code"].First();
 
-        return new OkObjectResult("Refresh Token Saved.");
+        var idTokenValidationResult = await this.IdentityManager.ValidateIsAuthorizedUserAsync(idToken);
+        if (idTokenValidationResult.IsError)
+        {
+            log.LogError(
+                idTokenValidationResult.Error.Exception,
+                $"id_token validation failed with message: {idTokenValidationResult.Error.Messsage}");
+            return new UnauthorizedResult();
+        }
+
+        return new OkObjectResult($"RefreshToken for {idTokenValidationResult.Value} saved.");
     }
 
     [FunctionName("HarmonyBadger_AuthEndpoint_Test")]
