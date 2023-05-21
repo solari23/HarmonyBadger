@@ -95,5 +95,10 @@ public static class Constants
         /// The environment variable holding the AAD 'HarmonyBadger Authorization' app certificate.
         /// </summary>
         public const string AadAuthorizationAppCert = "AAD_AUTHORIZATION_APP_CERT";
+
+        /// <summary>
+        /// The environment variable holding the Base64 encoded token encryption key.
+        /// </summary>
+        public const string TokenEncryptionKey = "TOKEN_ENCRYPTION_KEY";
     }
 }

@@ -32,9 +32,12 @@ public interface IIdentityManager
     /// <summary>
     /// Redeems the given authorization code and stores the resulting refresh token.
     /// </summary>
+    /// <param name="userEmail">The email of the user that is authorizing.</param>
     /// <param name="authCode">The authorization code to redeem.</param>
     /// <returns>A <see cref="Result"/> which indicates the outcome of the operation.</returns>
-    Task<Result> RedeemAuthCodeAndSaveRefreshTokenAsync(string authCode);
+    Task<Result> RedeemAuthCodeAndSaveRefreshTokenAsync(string userEmail, string authCode);
+
+    Task<Result<string>> DebugGetTokenInfoFromStorage(string userEmail);
 }
 
 public class IdentityManager : IIdentityManager
@@ -42,10 +45,11 @@ public class IdentityManager : IIdentityManager
     public static string HarmonyBadgerRedirectUri
         => $"https://{Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME")}/authorization";
 
-    public IdentityManager(IMemoryCache memoryCache, IConfiguration appSettings)
+    public IdentityManager(IMemoryCache memoryCache, IConfiguration appSettings, ITokenStorage tokenStorage)
     {
         this.MemoryCache = memoryCache;
         this.AppSettings = appSettings;
+        this.TokenStorage = tokenStorage;
 
         var msAppId = this.AppSettings.MSIdentityAppId();
         var msAppCert = GetMSAppCert();
@@ -60,6 +64,8 @@ public class IdentityManager : IIdentityManager
     private IMemoryCache MemoryCache { get; }
 
     private IConfiguration AppSettings { get; }
+
+    private ITokenStorage TokenStorage { get; }
 
     /// <inheritdoc />
     public Uri GetAuthorizationRequestUri(IEnumerable<string> scopes)
@@ -108,7 +114,7 @@ public class IdentityManager : IIdentityManager
     }
 
     /// <inheritdoc />
-    public async Task<Result> RedeemAuthCodeAndSaveRefreshTokenAsync(string authCode)
+    public async Task<Result> RedeemAuthCodeAndSaveRefreshTokenAsync(string userEmail, string authCode)
     {
         var tokenCallResult = await this.MSIdentityClient.CallTokenEndpointAsync(
             MSIdentityClient.GrantType.AuthorizationCode,
@@ -119,7 +125,25 @@ public class IdentityManager : IIdentityManager
             return Result<bool>.FromError(tokenCallResult.Error);
         }
 
+        await this.TokenStorage.SaveTokenAsync(
+            userEmail,
+            tokenCallResult.Value.Scope.Split(),
+            tokenCallResult.Value.RefreshToken);
+
         return Result.SuccessResult;
+    }
+
+    public async Task<Result<string>> DebugGetTokenInfoFromStorage(string userEmail)
+    {
+        var getResult = await this.TokenStorage.GetTokenAsync(userEmail);
+        if (getResult.IsError)
+        {
+            return Result<string>.FromError(getResult.Error);
+        }
+
+        var tokenInfo = getResult.Value;
+        var info = $"Found token with scopes '{string.Join(' ', tokenInfo.Scopes)}' {tokenInfo.Token.Substring(0, 10)}..";
+        return Result<string>.Success(info);
     }
 
     private static X509Certificate2 GetMSAppCert()
