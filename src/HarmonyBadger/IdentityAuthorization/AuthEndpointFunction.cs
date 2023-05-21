@@ -24,19 +24,9 @@ public class AuthEndpointFunction
     public IActionResult RunGet(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authorization")] HttpRequest req)
     {
-        var authorizeQueryBuilder = new QueryStringBuilder();
-        authorizeQueryBuilder.AddParameter("client_id", this.AppSettings.MSIdentityAppId());
-        authorizeQueryBuilder.AddParameter("response_type", "code+id_token", urlEncode: false);
-        authorizeQueryBuilder.AddParameter("redirect_uri", $"https://{req.Host}/authorization");
-        authorizeQueryBuilder.AddParameter("scope", "openid+email+offline_access+mail.send", urlEncode: false);
-        authorizeQueryBuilder.AddParameter("response_mode", "form_post");
-        authorizeQueryBuilder.AddParameter("prompt", "login");
-        authorizeQueryBuilder.AddParameter("nonce", Guid.NewGuid().ToString());
-
-        var authorizeUriBuilder = new UriBuilder("https://login.microsoftonline.com/common/oauth2/v2.0/authorize");
-        authorizeUriBuilder.Query = authorizeQueryBuilder.Build();
-
-        return new RedirectResult(authorizeUriBuilder.Uri.ToString());
+        var authorizeUri = this.IdentityManager.GetAuthorizationRequestUri(
+            new[] { "openid", "email", "offline_access", "mail.send" });
+        return new RedirectResult(authorizeUri.ToString());
     }
 
     [FunctionName("HarmonyBadger_AuthEndpoint_Post")]
@@ -75,7 +65,15 @@ public class AuthEndpointFunction
             return new UnauthorizedResult();
         }
 
-        return new OkObjectResult($"RefreshToken for {idTokenValidationResult.Value} saved.");
+        var authorizedUserEmail = idTokenValidationResult.Value;
+
+        var redeemResult = await this.IdentityManager.RedeemAuthCodeAndSaveRefreshTokenAsync(authCode);
+        if (redeemResult.IsError )
+        {
+            log.LogError($"Redeeming auth code failed due to error: {redeemResult.Error.Messsage}\n Detail: {redeemResult.Error.Detail}");
+        }
+
+        return new OkObjectResult($"RefreshToken for {authorizedUserEmail} saved.");
     }
 
     [FunctionName("HarmonyBadger_AuthEndpoint_Test")]
