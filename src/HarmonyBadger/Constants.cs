@@ -90,5 +90,10 @@ public static class Constants
         /// The environment variable holding the Discord bot app's secret key.
         /// </summary>
         public const string DiscordBotSecretKey = "DISCORD_BOT_SECRET";
+
+        /// <summary>
+        /// The environment variable holding the AAD 'HarmonyBadger Authorization' app certificate.
+        /// </summary>
+        public const string AadAuthorizationAppCert = "AAD_AUTHORIZATION_APP_CERT";
     }
 }
