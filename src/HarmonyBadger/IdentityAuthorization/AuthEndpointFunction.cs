@@ -83,8 +83,8 @@ public class AuthEndpointFunction
         var email = req.Query["email"].FirstOrDefault();
         if (email is not null)
         {
-            var debugInfo = await this.IdentityManager.DebugGetTokenInfoFromStorage(email);
-            var data = debugInfo.IsError ? debugInfo.Error.Messsage : debugInfo.Value;
+            var debugInfo = await this.IdentityManager.GetAccessTokenForUserAsync(email);
+            var data = debugInfo.IsError ? debugInfo.Error.Messsage : $"Access Token: {debugInfo.Value.Substring(0, 10)}..";
             return new OkObjectResult(data);
         }
 

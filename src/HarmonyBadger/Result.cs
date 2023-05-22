@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using Newtonsoft.Json.Linq;
 
 namespace HarmonyBadger;
 
@@ -74,6 +75,14 @@ public class Result
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result FromError(ErrorInfo error)
         => new (error);
+
+    /// <summary>
+    /// Casts the error to an instance of <see cref="Result"/>.
+    /// </summary>
+    /// <param name="error">The error to cast.</param>
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static implicit operator Result(ErrorInfo error) => FromError(error);
 
     protected static Func<string, string, Exception, ErrorInfo> errorInfoFactory;
 
@@ -218,13 +227,28 @@ public class Result<TValue> : Result
     /// Casts the <see cref="Result{TValue}"/> to the underlying <typeparamref name="TValue"/>.
     /// </summary>
     /// <param name="result">The <see cref="Result{TValue}"/> to cast.</param>
-    /// </summary>
     /// <exception cref="InvalidOperationException">
     /// The <see cref="Result{TValue}"/> represents an error and does not contain a value.
     /// </exception>
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator TValue(Result<TValue> result) => result.Value;
+
+    /// <summary>
+    /// Casts the given <typeparamref name="TValue"/> value to a <see cref="Result{TValue}"/>.
+    /// </summary>
+    /// <param name="result">The value to cast.</param>
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static implicit operator Result<TValue>(TValue value) => Success(value);
+
+    /// <summary>
+    /// Casts the error to an instance of <see cref="Result{TValue}"/>.
+    /// </summary>
+    /// <param name="error">The error to cast.</param>
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static implicit operator Result<TValue>(ErrorInfo error) => FromError(error);
 
     private Result(TValue value, ErrorInfo error) : base(error)
     {

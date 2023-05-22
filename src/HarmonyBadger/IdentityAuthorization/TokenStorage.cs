@@ -10,17 +10,19 @@ public interface ITokenStorage
     /// <summary>
     /// Persists the given token to storage.
     /// </summary>
+    /// <param name="tokenType">The type of token. This is used as a partition key.</param>
     /// <param name="userEmail">The email of the user that the token is associated with.</param>
     /// <param name="scopes">The OAuth scopes that the token has been authorized for.</param>
     /// <param name="token">The token to store.</param>
-    Task SaveTokenAsync(string userEmail, IEnumerable<string> scopes, string token);
+    Task SaveTokenAsync(string tokenType, string userEmail, IEnumerable<string> scopes, string token);
 
     /// <summary>
     /// Gets a token from storage.
     /// </summary>
+    /// <param name="tokenType">The type of token. This is used as a partition key.</param>
     /// <param name="userEmail">The email of the user whose token to retrieve.</param>
     /// <returns>A result that either contains the <see cref="TokenInfo"/> or an error.</returns>
-    Task<Result<TokenInfo>> GetTokenAsync(string userEmail);
+    Task<Result<TokenInfo>> GetTokenAsync(string tokenType, string userEmail);
 }
 
 public class TokenStorage : ITokenStorage
@@ -44,13 +46,12 @@ public class TokenStorage : ITokenStorage
     });
 
     /// <inheritdoc />
-    public async Task SaveTokenAsync(string userEmail, IEnumerable<string> scopes, string token)
+    public async Task SaveTokenAsync(string tokenType, string userEmail, IEnumerable<string> scopes, string token)
     {
-        var normalizedEmail = NormalizeEmail(userEmail);
         var tokenInfoEntity = new TokenInfoEntity
         {
-            PartitionKey = normalizedEmail,
-            RowKey = normalizedEmail,
+            PartitionKey = tokenType,
+            RowKey = NormalizeEmail(userEmail),
             UserEmail = userEmail,
             Scopes = string.Join(' ', scopes),
             EncryptedToken = CryptoHelper.EncryptDataAes256(TokenEncryptionKey.Value, token),
@@ -64,16 +65,16 @@ public class TokenStorage : ITokenStorage
     }
 
     /// <inheritdoc />
-    public async Task<Result<TokenInfo>> GetTokenAsync(string userEmail)
+    public async Task<Result<TokenInfo>> GetTokenAsync(string tokenType, string userEmail)
     {
         var normalizedEmail = NormalizeEmail(userEmail);
         var getResult = await this.storageClient.Value.GetEntityIfExistsAsync<TokenInfoEntity>(
-            normalizedEmail,
+            tokenType,
             normalizedEmail);
 
         if (!getResult.HasValue)
         {
-            return Result<TokenInfo>.FromError($"No token is stored for user {userEmail}");
+            return Result<TokenInfo>.FromError($"No {tokenType} token is stored for user {userEmail}");
         }
 
         var tokenInfoEntity = getResult.Value;
@@ -84,7 +85,7 @@ public class TokenStorage : ITokenStorage
             Token = CryptoHelper.DecryptDataAes256(TokenEncryptionKey.Value, tokenInfoEntity.EncryptedToken),
         };
 
-        return Result<TokenInfo>.Success(tokenInfo);
+        return tokenInfo;
     }
 
     private static string NormalizeEmail(string email) => email.ToLowerInvariant();
