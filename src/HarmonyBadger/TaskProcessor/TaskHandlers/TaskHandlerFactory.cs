@@ -1,4 +1,5 @@
 ﻿using HarmonyBadger.ConfigModels;
+using HarmonyBadger.IdentityAuthorization;
 
 namespace HarmonyBadger.TaskProcessor.TaskHandlers;
 
@@ -23,18 +24,22 @@ public class TaskHandlerFactory : ITaskHandlerFactory
     /// <summary>
     /// Creates a new instance of the <see cref="TaskHandlerFactory"/> class.
     /// </summary>
-    public TaskHandlerFactory(IConfigProvider configProvider)
+    public TaskHandlerFactory(IConfigProvider configProvider, IIdentityManager identityManager)
     {
         this.ConfigProvider = configProvider;
+        this.IdentityManager = identityManager;
     }
 
     private IConfigProvider ConfigProvider { get; }
 
+    private IIdentityManager IdentityManager { get; }
+
     /// <inheritdoc />
     public ITaskHandler CreateHandler(TaskKind taskKind) => taskKind switch
     {
-        TaskKind.Test => new TestTaskHander(this.ConfigProvider),
+        TaskKind.Test => new TestTaskHandler(this.ConfigProvider),
         TaskKind.DiscordReminder => new DiscordReminderTaskHandler(this.ConfigProvider),
+        TaskKind.ForceRefreshToken => new ForceRefreshTokenTaskHandler(this.ConfigProvider, this.IdentityManager),
         _ => throw new NotImplementedException($"No handler is defined for {taskKind} tasks."),
     };
 }
