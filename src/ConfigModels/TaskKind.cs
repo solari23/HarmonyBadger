@@ -31,4 +31,10 @@ public enum TaskKind
     /// See <see cref="DiscordReminderTask"/> for more details.
     /// </summary>
     DiscordReminder = 1,
+
+    /// <summary>
+    /// An internal utility task that forces HarmonyBadger to refresh tokens in storage so that they do not expire.
+    /// See <see cref="ForceRefreshTokenTask"/> for more details.
+    /// </summary>
+    ForceRefreshToken = 2,
 }

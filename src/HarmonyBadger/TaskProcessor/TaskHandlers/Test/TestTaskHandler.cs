@@ -8,12 +8,12 @@ namespace HarmonyBadger.TaskProcessor.TaskHandlers;
 /// <summary>
 /// A handler for <see cref="TaskKind.Test"/> tasks.
 /// </summary>
-public class TestTaskHander : TaskHandlerBase<TestTask>
+public class TestTaskHandler : TaskHandlerBase<TestTask>
 {
     /// <summary>
-    /// Creates a new instance of the <see cref="TestTaskHander"/> class.
+    /// Creates a new instance of the <see cref="TestTaskHandler"/> class.
     /// </summary>
-    public TestTaskHander(IConfigProvider configProvider) : base(configProvider)
+    public TestTaskHandler(IConfigProvider configProvider) : base(configProvider)
     {
         // Empty.
     }

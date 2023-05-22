@@ -1,0 +1,20 @@
+{
+  "IsEnabled": false,
+  "Schedule": [
+    {
+      "ScheduleKind": "Daily",
+      "Time": "12 PM"
+    }
+  ],
+  "Task": {
+    "TaskKind": "ForceRefreshToken",
+    "TokensToRefresh": [
+      {
+        "UserEmail": "bob@example.com"
+      },
+      {
+        "UserEmail": "bill@outlook.com"
+      }
+    ]
+  }
+}
