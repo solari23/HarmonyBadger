@@ -47,7 +47,7 @@ public interface IIdentityManager
 
 public class IdentityManager : IIdentityManager
 {
-    private const string RefreshTokenType = "refresh_token";
+    private const string MSIdentityRefreshTokenType = "msidentity_refresh_token";
 
     private static string HarmonyBadgerRedirectUri
         => $"https://{Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME")}/authorization";
@@ -133,7 +133,7 @@ public class IdentityManager : IIdentityManager
         }
 
         await this.TokenStorage.SaveTokenAsync(
-            RefreshTokenType,
+            MSIdentityRefreshTokenType,
             userEmail,
             tokenCallResult.Value.Scope.Split(),
             tokenCallResult.Value.RefreshToken);
@@ -144,7 +144,7 @@ public class IdentityManager : IIdentityManager
     /// <inheritdoc />
     public async Task<Result<string>> GetAccessTokenForUserAsync(string userEmail)
     {
-        var getRefreshTokenResult = await this.TokenStorage.GetTokenAsync(RefreshTokenType, userEmail);
+        var getRefreshTokenResult = await this.TokenStorage.GetTokenAsync(MSIdentityRefreshTokenType, userEmail);
         if (getRefreshTokenResult.IsError)
         {
             return getRefreshTokenResult.Error;
@@ -161,7 +161,7 @@ public class IdentityManager : IIdentityManager
 
         // Save the new RefreshToken returned by the IdP.
         await this.TokenStorage.SaveTokenAsync(
-            RefreshTokenType,
+            MSIdentityRefreshTokenType,
             userEmail,
             tokenResponse.Value.Scope.Split(),
             tokenResponse.Value.RefreshToken);
