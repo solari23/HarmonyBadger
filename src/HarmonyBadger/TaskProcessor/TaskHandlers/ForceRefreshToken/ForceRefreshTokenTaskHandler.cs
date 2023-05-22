@@ -4,7 +4,10 @@ using Microsoft.Extensions.Logging;
 
 namespace HarmonyBadger.TaskProcessor.TaskHandlers;
 
-internal class ForceRefreshTokenTaskHandler : TaskHandlerBase<ForceRefreshTokenTask>
+/// <summary>
+/// Handler for <see cref="TaskKind.ForceRefreshToken"/> tasks.
+/// </summary>
+public class ForceRefreshTokenTaskHandler : TaskHandlerBase<ForceRefreshTokenTask>
 {
     /// <summary>
     /// Creates a new instance of the <see cref="ForceRefreshTokenTaskHandler"/> class.
