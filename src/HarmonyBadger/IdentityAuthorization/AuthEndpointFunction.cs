@@ -67,7 +67,7 @@ public class AuthEndpointFunction
 
         var authorizedUserEmail = idTokenValidationResult.Value;
 
-        var redeemResult = await this.IdentityManager.RedeemAuthCodeAndSaveRefreshTokenAsync(authCode);
+        var redeemResult = await this.IdentityManager.RedeemAuthCodeAndSaveRefreshTokenAsync(authorizedUserEmail, authCode);
         if (redeemResult.IsError)
         {
             log.LogError($"Redeeming auth code failed due to error: {redeemResult.Error.Messsage}\n Detail: {redeemResult.Error.Detail}");
@@ -77,9 +77,17 @@ public class AuthEndpointFunction
     }
 
     [FunctionName("HarmonyBadger_AuthEndpoint_Test")]
-    public IActionResult Test(
+    public async Task<IActionResult> Test(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "test")] HttpRequest req)
     {
+        var email = req.Query["email"].FirstOrDefault();
+        if (email is not null)
+        {
+            var debugInfo = await this.IdentityManager.DebugGetTokenInfoFromStorage(email);
+            var data = debugInfo.IsError ? debugInfo.Error.Messsage : debugInfo.Value;
+            return new OkObjectResult(data);
+        }
+
         // Temporary function to help validate appsettings setup.
         var sb = new System.Text.StringBuilder();
         sb.AppendLine($"TestSetting1 => {this.AppSettings.GetValue<string>("TestSetting1")}");

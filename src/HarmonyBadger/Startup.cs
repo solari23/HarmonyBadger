@@ -35,6 +35,7 @@ public class Startup : FunctionsStartup
         builder.Services.AddScoped<IConfigProvider, ConfigProvider>();
         builder.Services.AddTransient<ITaskHandlerFactory, TaskHandlerFactory>();
         builder.Services.AddSingleton<IIdentityManager, IdentityManager>();
+        builder.Services.AddSingleton<ITokenStorage, TokenStorage>();
         builder.Services.AddMemoryCache();
 
 #if DEBUG

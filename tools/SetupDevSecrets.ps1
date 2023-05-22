@@ -14,9 +14,12 @@ az login
 $harmonyBadgerProjFile = Resolve-Path "$PSScriptRoot/../src/HarmonyBadger/HarmonyBadger.csproj"
 dotnet user-secrets init --id $USER_SECRETS_ID -p $harmonyBadgerProjFile
 
-# Fetch and set the secret to the local store
+# Fetch KeyVault secrets and set them in local store
 $secret = az keyvault secret show --vault-name $KEYVAULT_NAME --name DiscordBotSecret --query value
 dotnet user-secrets --id $USER_SECRETS_ID -p $harmonyBadgerProjFile set "DISCORD_BOT_SECRET" $secret
 
 $secret = az keyvault secret show --vault-name $KEYVAULT_NAME --name AadAuthorizationAppCert --query value
 dotnet user-secrets --id $USER_SECRETS_ID -p $harmonyBadgerProjFile set "AAD_AUTHORIZATION_APP_CERT" $secret
+
+$secret = az keyvault secret show --vault-name $KEYVAULT_NAME --name TokenEncryptionKey --query value
+dotnet user-secrets --id $USER_SECRETS_ID -p $harmonyBadgerProjFile set "TOKEN_ENCRYPTION_KEY" $secret
