@@ -1,4 +1,5 @@
 ﻿using HarmonyBadger.ConfigModels.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace HarmonyBadger.TaskProcessor.TaskHandlers;
@@ -11,12 +12,15 @@ public class SendEmailTaskHandler : TaskHandlerBase<SendEmailTask>
     /// <summary>
     /// Creates a new instance of the <see cref="SendEmailTaskHandler"/> class.
     /// </summary>
-    public SendEmailTaskHandler(IEmailClient mailClient)
+    public SendEmailTaskHandler(IEmailClient mailClient, IConfiguration appSettings)
     {
         this.MailClient = mailClient;
+        this.AppSettings = appSettings;
     }
 
     private IEmailClient MailClient { get; }
+
+    private IConfiguration AppSettings { get; }
 
     /// <inheritdoc />
     protected override async Task HandleAsync(SendEmailTask task, ILogger log)
@@ -32,7 +36,10 @@ public class SendEmailTaskHandler : TaskHandlerBase<SendEmailTask>
             IsHtml = true,
         };
 
-        await this.MailClient.SendMailAsync(task.Sender, message);
-        log.LogInformation("<TODO> Sending email!");
+        var sender = string.IsNullOrWhiteSpace(task.Sender)
+            ? this.AppSettings.DefaultEmailSenderAccount()
+            : task.Sender;
+
+        await this.MailClient.SendMailAsync(sender, message);
     }
 }
