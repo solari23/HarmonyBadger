@@ -111,12 +111,24 @@ public class MSGraphEmailClient : IEmailClient, IDisposable
                 Importance = message.IsHighImportance ? Importance.High : Importance.Normal,
             },
         };
-        var requestJson = JsonSerializer.Serialize(request);
+        var requestJson = JsonSerializer.Serialize(
+            request,
+            new JsonSerializerOptions
+            {
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            });
 
         var response = await this.HttpClient.PostAsync(
             MSGraphSendMailApiEndpoint,
             new StringContent(requestJson, Encoding.UTF8, "application/json"));
-        response.EnsureSuccessStatusCode();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var errorResponse = JsonSerializer.Deserialize<ErrorResponse>(responseContent);
+            throw new OperationFailedException(
+                $"Calling MSGraph SendEmail API Failed\nHttpStatus: {response.StatusCode} ({(int)response.StatusCode})\nErrorCode: {errorResponse.Error.Code}\nMessage: {errorResponse.Error.Message}");
+        }
     }
 
     private static Recipient[] ToRequestRecipientFormat(IEnumerable<string> recipients)
@@ -188,6 +200,22 @@ public class MSGraphEmailClient : IEmailClient, IDisposable
         Normal,
         High,
     }
+
+    private class ErrorResponse
+    {
+        [JsonPropertyName("error")]
+        public Error Error { get; set; }
+    }
+
+    private class Error
+    {
+        [JsonPropertyName("code")]
+        public string Code { get; set; }
+
+        [JsonPropertyName("message")]
+        public string Message { get; set; }
+    }
+
 
     #endregion
 
