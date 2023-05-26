@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using Newtonsoft.Json.Linq;
 
 namespace HarmonyBadger;
 
@@ -129,7 +128,7 @@ public class Result
         /// </summary>
         private ErrorInfo(string messsage, string detail, Exception exception)
         {
-            this.Messsage = messsage;
+            this.Message = messsage;
             this.Detail = detail;
             this.Exception = exception;
         }
@@ -137,7 +136,7 @@ public class Result
         /// <summary>
         /// A summary message that describes the error.
         /// </summary>
-        public string Messsage { get; }
+        public string Message { get; }
 
         /// <summary>
         /// Detailed information about the error.
@@ -148,6 +147,17 @@ public class Result
         /// The exception that is the source of the error (if applicable).
         /// </summary>
         public Exception Exception { get; }
+
+        /// <summary>
+        /// Causes an exception of type <see cref="OperationFailedException"/> to be thrown.
+        /// The exception will contain diagnostic information from this <see cref="ErrorInfo"/> object.
+        /// </summary>
+        /// <param name="contextMessage">An optional message to add to as a prefix to the exception message.</param>
+        public void Throw(string contextMessage = null)
+        {
+            contextMessage ??= string.Empty;
+            throw new OperationFailedException($"{contextMessage}\nError: {this.Message}\nDetails: {this.Detail}", this.Exception);
+        }
     }
 }
 

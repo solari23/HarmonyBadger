@@ -30,7 +30,7 @@ public class ForceRefreshTokenTaskHandler : TaskHandlerBase<ForceRefreshTokenTas
 
             if (refreshResult.IsError)
             {
-                errors.Add($"Failed to refresh token for '{token.UserEmail}' due to error: {refreshResult.Error.Messsage}");
+                errors.Add($"Failed to refresh token for '{token.UserEmail}' due to error: {refreshResult.Error.Message}");
             }
             else
             {
