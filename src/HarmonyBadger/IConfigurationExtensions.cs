@@ -42,4 +42,7 @@ public static class IConfigurationExtensions
 
         return authorizedUsers.Contains(email);
     }
+
+    public static string DefaultEmailSenderAccount(this IConfiguration appSettings)
+        => appSettings.GetValue<string>("DefaultEmailSenderAccount");
 }

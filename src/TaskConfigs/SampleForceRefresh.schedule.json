@@ -2,8 +2,8 @@
   "IsEnabled": false,
   "Schedule": [
     {
-      "ScheduleKind": "Daily",
-      "Time": "12 PM"
+      "ScheduleKind": "Cron",
+      "Expression": "0 * * * *"
     }
   ],
   "Task": {

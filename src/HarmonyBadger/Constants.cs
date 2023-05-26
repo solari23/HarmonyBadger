@@ -43,6 +43,7 @@ public static class Constants
     {
         AllowTrailingCommas = true,
         ReadCommentHandling = JsonCommentHandling.Skip,
+        PropertyNameCaseInsensitive = true,
     };
 
     /// <summary>

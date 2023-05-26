@@ -12,8 +12,7 @@ public class ForceRefreshTokenTaskHandler : TaskHandlerBase<ForceRefreshTokenTas
     /// <summary>
     /// Creates a new instance of the <see cref="ForceRefreshTokenTaskHandler"/> class.
     /// </summary>
-    public ForceRefreshTokenTaskHandler(IConfigProvider configProvider, IIdentityManager identityManager)
-        : base(configProvider)
+    public ForceRefreshTokenTaskHandler(IIdentityManager identityManager)
     {
         this.IdentityManager = identityManager;
     }

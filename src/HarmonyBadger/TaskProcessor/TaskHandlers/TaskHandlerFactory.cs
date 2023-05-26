@@ -1,5 +1,6 @@
 ﻿using HarmonyBadger.ConfigModels;
 using HarmonyBadger.IdentityAuthorization;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HarmonyBadger.TaskProcessor.TaskHandlers;
 
@@ -24,22 +25,20 @@ public class TaskHandlerFactory : ITaskHandlerFactory
     /// <summary>
     /// Creates a new instance of the <see cref="TaskHandlerFactory"/> class.
     /// </summary>
-    public TaskHandlerFactory(IConfigProvider configProvider, IIdentityManager identityManager)
+    public TaskHandlerFactory(IServiceProvider serviceProvider)
     {
-        this.ConfigProvider = configProvider;
-        this.IdentityManager = identityManager;
+        this.ServiceProvider = serviceProvider;
     }
 
-    private IConfigProvider ConfigProvider { get; }
-
-    private IIdentityManager IdentityManager { get; }
+    private IServiceProvider ServiceProvider { get; }
 
     /// <inheritdoc />
     public ITaskHandler CreateHandler(TaskKind taskKind) => taskKind switch
     {
-        TaskKind.Test => new TestTaskHandler(this.ConfigProvider),
-        TaskKind.DiscordReminder => new DiscordReminderTaskHandler(this.ConfigProvider),
-        TaskKind.ForceRefreshToken => new ForceRefreshTokenTaskHandler(this.ConfigProvider, this.IdentityManager),
+        TaskKind.Test => ActivatorUtilities.CreateInstance<TestTaskHandler>(this.ServiceProvider),
+        TaskKind.DiscordReminder => ActivatorUtilities.CreateInstance<DiscordReminderTaskHandler>(this.ServiceProvider),
+        TaskKind.ForceRefreshToken => ActivatorUtilities.CreateInstance<ForceRefreshTokenTaskHandler>(this.ServiceProvider),
+        TaskKind.SendEmail => ActivatorUtilities.CreateInstance<SendEmailTaskHandler>(this.ServiceProvider),
         _ => throw new NotImplementedException($"No handler is defined for {taskKind} tasks."),
     };
 }

@@ -10,14 +10,6 @@ namespace HarmonyBadger.TaskProcessor.TaskHandlers;
 /// </summary>
 public class TestTaskHandler : TaskHandlerBase<TestTask>
 {
-    /// <summary>
-    /// Creates a new instance of the <see cref="TestTaskHandler"/> class.
-    /// </summary>
-    public TestTaskHandler(IConfigProvider configProvider) : base(configProvider)
-    {
-        // Empty.
-    }
-
     /// <inheritdoc />
     protected override Task HandleAsync(TestTask task, ILogger log)
     {

@@ -14,10 +14,12 @@ public class DiscordReminderTaskHandler : TaskHandlerBase<DiscordReminderTask>
     /// <summary>
     /// Creates a new instance of the <see cref="DiscordReminderTaskHandler"/> class.
     /// </summary>
-    public DiscordReminderTaskHandler(IConfigProvider configProvider) : base(configProvider)
+    public DiscordReminderTaskHandler(IConfigProvider configProvider)
     {
-        // Empty.
+        this.ConfigProvider = configProvider;
     }
+
+    private IConfigProvider ConfigProvider { get; }
 
     /// <inheritdoc />
     protected override async Task HandleAsync(DiscordReminderTask task, ILogger log)
