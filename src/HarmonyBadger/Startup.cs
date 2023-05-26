@@ -36,6 +36,7 @@ public class Startup : FunctionsStartup
         builder.Services.AddTransient<ITaskHandlerFactory, TaskHandlerFactory>();
         builder.Services.AddSingleton<IIdentityManager, IdentityManager>();
         builder.Services.AddSingleton<ITokenStorage, TokenStorage>();
+        builder.Services.AddSingleton<IEmailClient, MSGraphEmailClient>();
         builder.Services.AddMemoryCache();
 
 #if DEBUG

@@ -15,16 +15,6 @@ namespace HarmonyBadger.TaskProcessor.TaskHandlers;
 public abstract class TaskHandlerBase<TTask> : ITaskHandler
     where TTask : class, ITask
 {
-    /// <summary>
-    /// Creates a new instance of the <see cref="TaskHandlerBase{TTask}"/> class.
-    /// </summary>
-    public TaskHandlerBase(IConfigProvider configProvider)
-    {
-        this.ConfigProvider = configProvider;
-    }
-
-    protected IConfigProvider ConfigProvider { get; }
-
     /// <inheritdoc />
     public async Task HandleAsync(ITask task, ILogger log)
     {

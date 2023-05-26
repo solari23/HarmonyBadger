@@ -1,0 +1,19 @@
+{
+  "IsEnabled": false,
+  "Schedule": [
+    {
+      "ScheduleKind": "Cron",
+      "Expression": "0 * * * *"
+    }
+  ],
+  "Task": {
+    "TaskKind": "SendEmail",
+    "Sender": "sender@hotmail.com",
+    "ToRecipients": [ "test@example.com", "test2@example.com", "test3@example.com" ],
+    "CCRecipients": [ "cc@example.com" ],
+    "BCCRecipients": [ "bcc@example.com" ],
+    "subject": "My Test Email Subject",
+    "Message": "This is a test email",
+    "HighImportance": true
+  }
+}

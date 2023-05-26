@@ -37,4 +37,10 @@ public enum TaskKind
     /// See <see cref="ForceRefreshTokenTask"/> for more details.
     /// </summary>
     ForceRefreshToken = 2,
+
+    /// <summary>
+    /// A task that sends an email.
+    /// See <see cref="SendEmailTask"/> for more details.
+    /// </summary>
+    SendEmail = 3,
 }
