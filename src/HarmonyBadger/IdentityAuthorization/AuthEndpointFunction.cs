@@ -61,7 +61,7 @@ public class AuthEndpointFunction
         {
             log.LogError(
                 idTokenValidationResult.Error.Exception,
-                $"id_token validation failed with message: {idTokenValidationResult.Error.Messsage}");
+                $"id_token validation failed with message: {idTokenValidationResult.Error.Message}");
             return new UnauthorizedResult();
         }
 
@@ -70,7 +70,7 @@ public class AuthEndpointFunction
         var redeemResult = await this.IdentityManager.RedeemAuthCodeAndSaveRefreshTokenAsync(authorizedUserEmail, authCode);
         if (redeemResult.IsError)
         {
-            log.LogError($"Redeeming auth code failed due to error: {redeemResult.Error.Messsage}\n Detail: {redeemResult.Error.Detail}");
+            log.LogError($"Redeeming auth code failed due to error: {redeemResult.Error.Message}\n Detail: {redeemResult.Error.Detail}");
         }
 
         return new OkObjectResult($"RefreshToken for {authorizedUserEmail} saved.");
@@ -84,7 +84,9 @@ public class AuthEndpointFunction
         if (email is not null)
         {
             var debugInfo = await this.IdentityManager.GetAccessTokenForUserAsync(email);
-            var data = debugInfo.IsError ? debugInfo.Error.Messsage : $"Access Token: {debugInfo.Value.Substring(0, 10)}..";
+            var data = debugInfo.IsError 
+                ? debugInfo.Error.Message + " | " + debugInfo.Error.Detail
+                : $"Access Token: {debugInfo.Value.Substring(0, 10)}..";
             return new OkObjectResult(data);
         }
 

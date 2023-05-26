@@ -21,6 +21,18 @@ public class SendEmailTaskHandler : TaskHandlerBase<SendEmailTask>
     /// <inheritdoc />
     protected override async Task HandleAsync(SendEmailTask task, ILogger log)
     {
+        var message = new EmailMessage
+        {
+            Subject = task.Subject,
+            Body = task.Message,
+            ToRecipients = task.ToRecipients,
+            CCRecipients = task.CCRecipients,
+            BccRecipients = task.BccRecipients,
+            IsHighImportance = task.HighImportance,
+            IsHtml = true,
+        };
+
+        await this.MailClient.SendMailAsync(task.Sender, message);
         log.LogInformation("<TODO> Sending email!");
     }
 }
