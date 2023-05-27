@@ -48,9 +48,25 @@ public interface ITemplateEngine
 public class DotLiquidTemplateEngine : ITemplateEngine
 {
     /// <summary>
-    /// Template variable automatically supplied by Harmony Badger that represents the current time (in the configured local time).
+    /// A set of names of template variables that are provided to all templates by the engine.
     /// </summary>
-    public const string NowLocalVariableName = "HB_NowLocal";
+    public static class DefaultVariableNames
+    {
+        /// <summary>
+        /// The current time (in the configured local time).
+        /// </summary>
+        public const string NowLocal = "HB_NowLocal";
+
+        /// <summary>
+        /// The current time (in UTC).
+        /// </summary>
+        public const string NowUtc = "HB_NowUtc";
+
+        /// <summary>
+        /// The environment that the app is running in (Dev vs Prod).
+        /// </summary>
+        public const string Environment = "HB_Environment";
+    }
 
     public DotLiquidTemplateEngine(IMemoryCache cache, IOptions<ExecutionContextOptions> azureFunctionContext, IClock clock)
     {
@@ -59,6 +75,8 @@ public class DotLiquidTemplateEngine : ITemplateEngine
         this.TemplateFileDirectoryPath = Path.Combine(
             azureFunctionContext.Value.AppDirectory,
             Constants.TemplateFilesDirectoryName);
+
+        Template.DefaultSyntaxCompatibilityLevel = SyntaxCompatibility.DotLiquid22;
     }
 
     private IMemoryCache Cache { get; }
@@ -122,7 +140,9 @@ public class DotLiquidTemplateEngine : ITemplateEngine
 
     private string Render(Template template, Dictionary<string, object> variables)
     {
-        variables.Add(NowLocalVariableName, this.Clock.LocalNow);
+        variables.Add(DefaultVariableNames.NowLocal, this.Clock.LocalNow);
+        variables.Add(DefaultVariableNames.NowUtc, this.Clock.UtcNow);
+        variables.Add(DefaultVariableNames.Environment, Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT"));
 
         var hashedVariables = Hash.FromDictionary(variables);
         return template.Render(hashedVariables);
