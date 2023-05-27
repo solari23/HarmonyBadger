@@ -38,7 +38,8 @@ public class SendEmailTaskHandler : TaskHandlerBase<SendEmailTask>
             CCRecipients = task.CCRecipients,
             BccRecipients = task.BccRecipients,
             IsHighImportance = task.HighImportance,
-            IsHtml = true,
+            IsHtml = task.IsHtml
+                || (task.TemplateFilePath is not null && task.TemplateFilePath.EndsWith(".html", StringComparison.OrdinalIgnoreCase)),
         };
 
         var sender = string.IsNullOrWhiteSpace(task.Sender)
