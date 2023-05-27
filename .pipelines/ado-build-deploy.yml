@@ -54,6 +54,10 @@ stages:
       - script: cp $(Build.SourcesDirectory)/HarmonyBadger.Config/TaskConfigs/* $(srcDir)/TaskConfigs
         displayName: 'Copy Private Configs'
 
+      # Copy templates from the private repo into the corresponding locations in the primary repo.
+      - script: cp $(Build.SourcesDirectory)/HarmonyBadger.Config/Templates/* $(srcDir)/Templates
+        displayName: 'Copy Private Templates'
+
       # Print the repo structure for debugging.
       - script: tree $(Build.SourcesDirectory)
         displayName: Print Directory Tree

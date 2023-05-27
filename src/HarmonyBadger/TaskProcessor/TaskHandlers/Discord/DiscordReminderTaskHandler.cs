@@ -14,12 +14,15 @@ public class DiscordReminderTaskHandler : TaskHandlerBase<DiscordReminderTask>
     /// <summary>
     /// Creates a new instance of the <see cref="DiscordReminderTaskHandler"/> class.
     /// </summary>
-    public DiscordReminderTaskHandler(IConfigProvider configProvider)
+    public DiscordReminderTaskHandler(IConfigProvider configProvider, ITemplateEngine templateEngine)
     {
         this.ConfigProvider = configProvider;
+        this.TemplateEngine = templateEngine;
     }
 
     private IConfigProvider ConfigProvider { get; }
+
+    private ITemplateEngine TemplateEngine { get; }
 
     /// <inheritdoc />
     protected override async Task HandleAsync(DiscordReminderTask task, ILogger log)
@@ -65,7 +68,8 @@ public class DiscordReminderTaskHandler : TaskHandlerBase<DiscordReminderTask>
             throw new Exception($"Guild '{recipient.ChannelId.Value}' was not found.");
         }
 
-        await channel.SendMessageAsync(task.Message);
+        var renderedMessage = await this.TemplateEngine.RenderTemplatedMessageAsync(task);
+        await channel.SendMessageAsync(renderedMessage);
         log.LogInformation($"Delivered reminder message to channel {channel.Name}");
     }
 }

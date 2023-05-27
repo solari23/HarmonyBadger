@@ -1,0 +1,20 @@
+{% comment %}
+  This template defines the following variables that should be filled:
+    - name: a person's name
+    - htmlToEscape: a string that would be unsafe for HTML
+{% endcomment %}
+
+Hello, {{name}}!
+
+Today is {{HB_NowLocal | date: "dddd"}}, {{HB_NowLocal | date: "M"}}
+
+Here we try to render some variable that doesn't exist: {{notDefinedVariable}} ~~
+
+{% if notDefinedVariable %}
+  You should NOT be able to see this string!!!!!
+{% else %}
+  You SHOULD be able to see this string!
+{% endif %}
+
+This string should be escaped for html: {{htmlToEscape | escape_once }}
+

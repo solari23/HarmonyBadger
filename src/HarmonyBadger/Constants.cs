@@ -13,6 +13,11 @@ public static class Constants
     public const string TaskConfigsDirectoryName = "TaskConfigs";
 
     /// <summary>
+    /// The name of the directory where template files are stored.
+    /// </summary>
+    public const string TemplateFilesDirectoryName = "Templates";
+
+    /// <summary>
     /// The extension used to identify scheduled task configuration files.
     /// </summary>
     public const string ScheduledTaskConfigFileExtension = ".schedule.json";

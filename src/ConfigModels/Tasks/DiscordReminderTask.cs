@@ -8,7 +8,7 @@ namespace HarmonyBadger.ConfigModels.Tasks;
 /// <summary>
 /// A task that sends a reminder over Discord.
 /// </summary>
-public class DiscordReminderTask : ITask, IValidatableObject, IJsonOnDeserialized
+public class DiscordReminderTask : ITask, IValidatableObject, IJsonOnDeserialized, ITemplatedMessage
 {
     /// <inheritdoc />
     [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -26,10 +26,14 @@ public class DiscordReminderTask : ITask, IValidatableObject, IJsonOnDeserialize
     /// </summary>
     public string RecipientName { get; set; }
 
-    /// <summary>
-    /// The reminder message.
-    /// </summary>
+    /// <inheritdoc />
     public string Message { get; set; }
+
+    /// <inheritdoc />
+    public string TemplateFilePath { get; set; }
+
+    /// <inheritdoc />
+    public Dictionary<string, string> TemplateParameters { get; set; }
 
     /// <inheritdoc />
     public IEnumerable<ValidationResult> Validate(ValidationContext _)
@@ -45,6 +49,11 @@ public class DiscordReminderTask : ITask, IValidatableObject, IJsonOnDeserialize
         {
             yield return new ValidationResult(
                 $"DiscordReminder task is missing field '{nameof(this.Message)}'");
+        }
+
+        foreach (var result in ((ITemplatedMessage)this).ValidateTemplatedMessageFields("DiscordReminder task"))
+        {
+            yield return result;
         }
     }
 
