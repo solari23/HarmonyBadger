@@ -1,6 +1,6 @@
-﻿using HarmonyBadger.ConfigModels;
-using HarmonyBadger.IdentityAuthorization;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+
+using HarmonyBadger.ConfigModels;
 
 namespace HarmonyBadger.TaskProcessor.TaskHandlers;
 

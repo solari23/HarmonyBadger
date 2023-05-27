@@ -7,7 +7,7 @@ namespace HarmonyBadger.ConfigModels.Tasks;
 /// <summary>
 /// A task that sends an email.
 /// </summary>
-public class SendEmailTask : ITask, IValidatableObject, IJsonOnDeserialized
+public class SendEmailTask : ITask, IValidatableObject, IJsonOnDeserialized, ITemplatedMessage
 {
     /// <inheritdoc />
     [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -42,10 +42,14 @@ public class SendEmailTask : ITask, IValidatableObject, IJsonOnDeserialized
     /// </summary>
     public string Subject { get; set; }
 
-    /// <summary>
-    /// The body of the message.
-    /// </summary>
+    /// <inheritdoc />
     public string Message { get; set; }
+
+    /// <inheritdoc />
+    public string TemplateFilePath { get; set; }
+
+    /// <inheritdoc />
+    public Dictionary<string, string> TemplateParameters { get; set; }
 
     /// <summary>
     /// Whether or not to flag the message 
@@ -108,10 +112,9 @@ public class SendEmailTask : ITask, IValidatableObject, IJsonOnDeserialized
                 $"SendEmail task is missing field '{nameof(this.Subject)}'");
         }
 
-        if (string.IsNullOrEmpty(this.Message))
+        foreach (var result in ((ITemplatedMessage)this).ValidateTemplatedMessageFields("SendEmail task"))
         {
-            yield return new ValidationResult(
-                $"SendEmail task is missing field '{nameof(this.Message)}'");
+            yield return result;
         }
     }
 

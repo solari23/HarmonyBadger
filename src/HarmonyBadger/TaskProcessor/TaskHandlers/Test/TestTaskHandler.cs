@@ -10,10 +10,17 @@ namespace HarmonyBadger.TaskProcessor.TaskHandlers;
 /// </summary>
 public class TestTaskHandler : TaskHandlerBase<TestTask>
 {
-    /// <inheritdoc />
-    protected override Task HandleAsync(TestTask task, ILogger log)
+    public TestTaskHandler(ITemplateEngine templateEngine)
     {
-        log.LogInformation($"[EXECUTING TEST TASK] {task.DebugMessage}");
-        return Task.CompletedTask;
+        this.TemplateEngine = templateEngine;
+    }
+
+    private ITemplateEngine TemplateEngine { get; }
+
+    /// <inheritdoc />
+    protected override async Task HandleAsync(TestTask task, ILogger log)
+    {
+        var message = await this.TemplateEngine.RenderTemplatedMessageAsync(task);
+        log.LogInformation($"[EXECUTING TEST TASK] {message}");
     }
 }

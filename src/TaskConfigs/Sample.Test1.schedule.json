@@ -26,6 +26,14 @@
   ],
   "Task": {
     "TaskKind": "Test",
-    "DebugMessage": "Hello World!"
+
+    // Only one of the next two properties can be defined.
+    //"Message": "Hello World! Today is {{HB_NowLocal | date: \"dddd\"}}!",
+    "TemplateFilePath": "SampleTemplate.liquid",
+
+    "TemplateParameters": {
+      "name": "The Wanderer",
+      "htmlToEscape": "<htmlTag>"
+    }
   }
 }
