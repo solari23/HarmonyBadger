@@ -52,9 +52,18 @@ public class SendEmailTask : ITask, IValidatableObject, IJsonOnDeserialized, ITe
     public Dictionary<string, string> TemplateParameters { get; set; }
 
     /// <summary>
-    /// Whether or not to flag the message 
+    /// Whether or not to flag the message (Default: false).
     /// </summary>
     public bool HighImportance { get; set; } = false;
+
+    /// <summary>
+    /// Indicates whether or not to treat the email body message as HTML (Default: false).
+    /// </summary>
+    /// <remarks>
+    /// Using a <see cref="TemplateFilePath"/> that ends with extension ".html" will
+    /// automatically be treated as HTML regarless of this setting.
+    /// </remarks>
+    public bool IsHtml { get; set; } = false;
 
     /// <inheritdoc />
     public IEnumerable<ValidationResult> Validate(ValidationContext _)
