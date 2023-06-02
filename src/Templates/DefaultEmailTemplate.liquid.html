@@ -4,6 +4,8 @@
     - message: The main message to callout to the recipient. 
     - name (optional): The recipient's name. To be used in a greeting.
     - extendedText (optional): More text to add to body of the message (in a lighter font than 'message').
+    - actionButtonLink (optional - must also specify actionButtonText): URL for a call-to-action button near the footer.
+    - actionButtonText (optional - must also specify actionButtonLink): Text shown on a call-to-action button near the footer.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -68,6 +70,19 @@
       font-weight: bold;
       color: #2BA6CB;
     }
+    .button {
+      background-color: #60A0A0;
+      border: none;
+      border-radius: 7px;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -90,6 +105,10 @@
 
   {% if extendedText %}
   <p>{{extendedText}}</p>
+  {% endif %}
+  
+  {% if actionButtonText and actionButtonLink %}
+  <div align="center"><a href="{{actionButtonLink}}" class="button">{{actionButtonText}}</a></div>
   {% endif %}
 
   <p class="footer">This message brought to you by <a href="https://github.com/solari23/HarmonyBadger">Harmony Badger</a></p>

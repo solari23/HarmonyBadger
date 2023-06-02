@@ -12,8 +12,15 @@
     "ToRecipients": [ "test@example.com", "test2@example.com", "test3@example.com" ],
     "CCRecipients": [ "cc@example.com" ],
     "BCCRecipients": [ "bcc@example.com" ],
-    "subject": "My Test Email Subject",
-    "Message": "This is a test email",
-    "HighImportance": true
+    "HighImportance": true,
+    "Subject": "My Test Email Subject",
+    "TemplateFilePath": "DefaultEmailTemplate.liquid.html",
+    "TemplateParameters": {
+      "name": "Jack",
+      "message": "This is your reminder to be awesome today.",
+      "extendedText": "Being awesome is part of a complete breakfast, don't you know..",
+      "actionButtonLink": "https://example.com",
+      "actionButtonText": "Be Awesome"
+    }
   }
 }
