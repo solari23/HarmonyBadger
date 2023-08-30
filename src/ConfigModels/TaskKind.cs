@@ -43,4 +43,10 @@ public enum TaskKind
     /// See <see cref="SendEmailTask"/> for more details.
     /// </summary>
     SendEmail = 3,
+
+    /// <summary>
+    /// A task that sends an SMS message.
+    /// See <see cref="SendSmsTask"/> for more details.
+    /// </summary>
+    SendSms = 4,
 }

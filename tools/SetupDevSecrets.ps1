@@ -23,3 +23,9 @@ dotnet user-secrets --id $USER_SECRETS_ID -p $harmonyBadgerProjFile set "AAD_AUT
 
 $secret = az keyvault secret show --vault-name $KEYVAULT_NAME --name TokenEncryptionKey --query value
 dotnet user-secrets --id $USER_SECRETS_ID -p $harmonyBadgerProjFile set "TOKEN_ENCRYPTION_KEY" $secret
+
+$secret = az keyvault secret show --vault-name $KEYVAULT_NAME --name TelesignCustomerId --query value
+dotnet user-secrets --id $USER_SECRETS_ID -p $harmonyBadgerProjFile set "TELESIGN_CUSTOMER_ID" $secret
+
+$secret = az keyvault secret show --vault-name $KEYVAULT_NAME --name TelesignApiKey --query value
+dotnet user-secrets --id $USER_SECRETS_ID -p $harmonyBadgerProjFile set "TELESIGN_API_KEY" $secret

@@ -37,6 +37,7 @@ public class Startup : FunctionsStartup
         builder.Services.AddSingleton<IIdentityManager, IdentityManager>();
         builder.Services.AddSingleton<ITokenStorage, TokenStorage>();
         builder.Services.AddSingleton<IEmailClient, MSGraphEmailClient>();
+        builder.Services.AddSingleton<ISmsClient, TelesignSmsClient>();
         builder.Services.AddSingleton<ITemplateEngine, DotLiquidTemplateEngine>();
         builder.Services.AddMemoryCache();
 

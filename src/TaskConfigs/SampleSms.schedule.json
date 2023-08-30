@@ -1,0 +1,14 @@
+{
+  "IsEnabled": false,
+  "Schedule": [
+    {
+      "ScheduleKind": "Cron",
+      "Expression": "0 * * * *"
+    }
+  ],
+  "Task": {
+    "TaskKind": "SendSms",
+    "PhoneNumber": "14258675309",
+    "Message": "Reminder: Hello!"
+  }
+}

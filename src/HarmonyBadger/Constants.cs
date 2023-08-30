@@ -106,5 +106,15 @@ public static class Constants
         /// The environment variable holding the Base64 encoded token encryption key.
         /// </summary>
         public const string TokenEncryptionKey = "TOKEN_ENCRYPTION_KEY";
+
+        /// <summary>
+        /// The environment variable holding the Telesign account customer ID.
+        /// </summary>
+        public const string TelesignCustomerId = "TELESIGN_CUSTOMER_ID";
+
+        /// <summary>
+        /// The environment variable holding the Telesign account API key.
+        /// </summary>
+        public const string TelesignApiKey = "TELESIGN_API_KEY";
     }
 }

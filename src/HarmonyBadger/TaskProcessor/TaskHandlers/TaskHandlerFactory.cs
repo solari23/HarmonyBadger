@@ -39,6 +39,7 @@ public class TaskHandlerFactory : ITaskHandlerFactory
         TaskKind.DiscordReminder => ActivatorUtilities.CreateInstance<DiscordReminderTaskHandler>(this.ServiceProvider),
         TaskKind.ForceRefreshToken => ActivatorUtilities.CreateInstance<ForceRefreshTokenTaskHandler>(this.ServiceProvider),
         TaskKind.SendEmail => ActivatorUtilities.CreateInstance<SendEmailTaskHandler>(this.ServiceProvider),
+        TaskKind.SendSms => ActivatorUtilities.CreateInstance<SendSmsTaskHandler>(this.ServiceProvider),
         _ => throw new NotImplementedException($"No handler is defined for {taskKind} tasks."),
     };
 }
