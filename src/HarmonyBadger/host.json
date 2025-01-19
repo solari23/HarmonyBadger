@@ -7,6 +7,9 @@
         "isEnabled": true,
         "maxAge": "10"
       }
+    },
+    "queues": {
+      "messageEncoding": "none"
     }
   },
   "logging": {

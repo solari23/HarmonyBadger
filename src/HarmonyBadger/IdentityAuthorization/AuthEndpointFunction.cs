@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -10,17 +9,23 @@ namespace HarmonyBadger.IdentityAuthorization;
 
 public class AuthEndpointFunction
 {
-    public AuthEndpointFunction(IConfiguration appSettings, IIdentityManager identityManager)
+    public AuthEndpointFunction(
+        IConfiguration appSettings,
+        IIdentityManager identityManager,
+        ILogger<AuthEndpointFunction> logger)
     {
         this.AppSettings = appSettings;
         this.IdentityManager = identityManager;
+        this.Logger = logger;
     }
 
     private IConfiguration AppSettings { get; }
 
     private IIdentityManager IdentityManager { get; }
 
-    [FunctionName("HarmonyBadger_AuthEndpoint_Get")]
+    private ILogger<AuthEndpointFunction> Logger { get; }
+
+    [Function("HarmonyBadger_AuthEndpoint_Get")]
     public IActionResult RunGet(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "authorization")] HttpRequest req)
     {
@@ -29,12 +34,11 @@ public class AuthEndpointFunction
         return new RedirectResult(authorizeUri.ToString());
     }
 
-    [FunctionName("HarmonyBadger_AuthEndpoint_Post")]
+    [Function("HarmonyBadger_AuthEndpoint_Post")]
     public async Task<IActionResult> RunPostAsync(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "authorization")] HttpRequest req,
-        ILogger log)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "authorization")] HttpRequest req)
     {
-        log.LogInformation("C# HTTP trigger function processed a request.");
+        this.Logger.LogInformation("C# HTTP trigger function processed a request.");
 
         using var formReader = new FormReader(req.Body);
         var requestForm = await formReader.ReadFormAsync();
@@ -49,7 +53,7 @@ public class AuthEndpointFunction
 
             // Return the error as a 200 so it'll render in browser.
             // The HTTP status doesn't actually matter here.
-            log.LogError(errorString);
+            this.Logger.LogError(errorString);
             return new OkObjectResult(errorString);
         }
 
@@ -59,7 +63,7 @@ public class AuthEndpointFunction
         var idTokenValidationResult = await this.IdentityManager.ValidateIsAuthorizedUserAsync(idToken);
         if (idTokenValidationResult.IsError)
         {
-            log.LogError(
+            this.Logger.LogError(
                 idTokenValidationResult.Error.Exception,
                 $"id_token validation failed with message: {idTokenValidationResult.Error.Message}");
             return new UnauthorizedResult();
@@ -70,13 +74,13 @@ public class AuthEndpointFunction
         var redeemResult = await this.IdentityManager.RedeemAuthCodeAndSaveRefreshTokenAsync(authorizedUserEmail, authCode);
         if (redeemResult.IsError)
         {
-            log.LogError($"Redeeming auth code failed due to error: {redeemResult.Error.Message}\n Detail: {redeemResult.Error.Detail}");
+            this.Logger.LogError($"Redeeming auth code failed due to error: {redeemResult.Error.Message}\n Detail: {redeemResult.Error.Detail}");
         }
 
         return new OkObjectResult($"RefreshToken for {authorizedUserEmail} saved.");
     }
 
-    [FunctionName("HarmonyBadger_AuthEndpoint_Test")]
+    [Function("HarmonyBadger_AuthEndpoint_Test")]
     public async Task<IActionResult> Test(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "test")] HttpRequest req)
     {

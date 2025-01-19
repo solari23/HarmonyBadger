@@ -2,6 +2,7 @@
 
 using Azure;
 using Azure.Data.Tables;
+using Microsoft.Extensions.Azure;
 
 namespace HarmonyBadger.IdentityAuthorization;
 
@@ -29,13 +30,11 @@ public class TokenStorage : ITokenStorage
 {
     private const string TableName = "HarmonyBadgerUserTokens";
 
-    private readonly Lazy<TableClient> storageClient = new (() =>
+    public TokenStorage(IAzureClientFactory<TableServiceClient> tableClientFactory)
     {
-        string connectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
-        var client = new TableClient(connectionString, TableName);
-        client.CreateIfNotExists();
-        return client;
-    });
+        this.TableClient = tableClientFactory.CreateClient(Constants.DefaultStorageClientName).GetTableClient(TableName);
+        this.TableClient.CreateIfNotExists();
+    }
 
     private static readonly Lazy<Aes> TokenEncryptionKey = new (() =>
     {
@@ -44,6 +43,8 @@ public class TokenStorage : ITokenStorage
         aes.Key = Convert.FromBase64String(encodedKey);
         return aes;
     });
+
+    private TableClient TableClient { get; }
 
     /// <inheritdoc />
     public async Task SaveTokenAsync(string tokenType, string userEmail, IEnumerable<string> scopes, string token)
@@ -57,7 +58,7 @@ public class TokenStorage : ITokenStorage
             EncryptedToken = CryptoHelper.EncryptDataAes256(TokenEncryptionKey.Value, token),
         };
 
-        var response = await this.storageClient.Value.UpsertEntityAsync(tokenInfoEntity);
+        var response = await this.TableClient.UpsertEntityAsync(tokenInfoEntity);
         if (response.IsError)
         {
             throw new Exception($"Failed to store token for user '{userEmail}'\nHTTP Status: {response.Status}\nHTTP Reason: {response.ReasonPhrase}");
@@ -68,7 +69,7 @@ public class TokenStorage : ITokenStorage
     public async Task<Result<TokenInfo>> GetTokenAsync(string tokenType, string userEmail)
     {
         var normalizedEmail = NormalizeEmail(userEmail);
-        var getResult = await this.storageClient.Value.GetEntityIfExistsAsync<TokenInfoEntity>(
+        var getResult = await this.TableClient.GetEntityIfExistsAsync<TokenInfoEntity>(
             tokenType,
             normalizedEmail);
 

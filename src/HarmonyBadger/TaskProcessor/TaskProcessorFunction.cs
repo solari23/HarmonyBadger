@@ -1,11 +1,9 @@
 using Azure.Storage.Queues.Models;
-using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
 using HarmonyBadger.ConfigModels;
 using HarmonyBadger.TaskProcessor.TaskHandlers;
-
-using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
 
 namespace HarmonyBadger.TaskProcessor;
 
@@ -20,45 +18,47 @@ public class TaskProcessorFunction
     /// </summary>
     public TaskProcessorFunction(
         IClock clock,
-        ITaskHandlerFactory taskHandlerFactory)
+        ITaskHandlerFactory taskHandlerFactory,
+        ILogger<TaskProcessorFunction> logger)
     {
         this.Clock = clock;
         this.TaskHandlerFactory = taskHandlerFactory;
+        this.Logger = logger;
     }
 
     private IClock Clock { get; }
 
     private ITaskHandlerFactory TaskHandlerFactory { get; }
 
+    private ILogger<TaskProcessorFunction> Logger { get; }
+
     /// <summary>
     /// The entry points for the HarmonyBadger_TaskProcessor function.
     /// </summary>
-    [FunctionName("HarmonyBadger_TaskProcessor")]
+    [Function("HarmonyBadger_TaskProcessor")]
     public async Task RunAsync(
         [QueueTrigger(Constants.TaskQueueName)] QueueMessage queueMessage,
-        ILogger log,
-        ExecutionContext context)
+        FunctionContext context)
     {
         var logContext = new TaskProcessorLogContext(context.InvocationId, this.Clock);
 
         try
         {
-            await this.HandleMessageAsync(queueMessage, log, logContext);
-            log.LogMetric(Constants.MetricNames.TaskExecuted, 1);
+            await this.HandleMessageAsync(queueMessage, logContext);
+            this.Logger.LogMetric(Constants.MetricNames.TaskExecuted, 1);
         }
         catch (Exception)
         {
             // Handling the task failed; error detail logging is handled in HandleMessageAsync.
             // We'll swallow the error -- Azure Function-level retry is not needed.
-            log.LogMetric(Constants.MetricNames.TaskExecutionFailed, 1);
+            this.Logger.LogMetric(Constants.MetricNames.TaskExecutionFailed, 1);
         }
 
-        logContext.Publish(log);
+        logContext.PublishTo(this.Logger);
     }
 
     private async Task HandleMessageAsync(
         QueueMessage queueMessage,
-        ILogger log,
         TaskProcessorLogContext logContext)
     {
         TaskActivationDetails task;
@@ -71,7 +71,7 @@ public class TaskProcessorFunction
         catch (Exception e)
         {
             var error = $"Deserializing message {queueMessage.MessageId} failed.";
-            log.LogError(e, error);
+            this.Logger.LogError(e, error);
             logContext.TaskProcessingFailureReason = error;
             throw;
         }
@@ -79,12 +79,12 @@ public class TaskProcessorFunction
         try
         {
             var handler = this.TaskHandlerFactory.CreateHandler(task.Task.TaskKind);
-            await handler.HandleAsync(task.Task, log);
+            await handler.HandleAsync(task.Task, this.Logger);
         }
         catch (Exception e)
         {
             var error = $"Executing task {task.ToLogString()} (from message {queueMessage.MessageId}) failed.";
-            log.LogError(e, error);
+            this.Logger.LogError(e, error);
             logContext.TaskProcessingFailureReason = error;
             throw;
         }

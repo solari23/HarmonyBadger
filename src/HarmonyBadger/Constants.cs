@@ -37,6 +37,11 @@ public static class Constants
     public const int MaxTriggersPerSchedule = 4;
 
     /// <summary>
+    /// The registered client name for the default storage account used by this function application.
+    /// </summary>
+    public const string DefaultStorageClientName = "DefaultStorageClient";
+
+    /// <summary>
     /// The name of the Azure queue used to schedule tasks for execution.
     /// </summary>
     public const string TaskQueueName = "task-queue";
