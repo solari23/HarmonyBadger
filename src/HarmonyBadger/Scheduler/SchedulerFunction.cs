@@ -1,6 +1,7 @@
 using System.Text.Json;
 
 using Azure.Storage.Queues;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
@@ -55,8 +56,20 @@ public class SchedulerFunction
     /// </summary>
     [Function("HarmonyBadger_Scheduler")]
     public async Task RunAsync(
-        [TimerTrigger(EveryHourAt50MinsTrigger, RunOnStartup = LauchImmediately)] TimerInfo myTimer,
+        [TimerTrigger(EveryHourAt50MinsTrigger, RunOnStartup = LauchImmediately)] TimerInfo timer,
         FunctionContext context)
+        => await this.RunSchedulerAsync(context);
+
+    /// <summary>
+    /// The entry point for the HarmonyBadger_Scheduler_Force function.
+    /// </summary>
+    [Function("HarmonyBadger_Scheduler_Force")]
+    public async Task ForceRunAsync(
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "forceScheduler")] HttpRequest request,
+        FunctionContext context)
+        => await this.RunSchedulerAsync(context);
+
+    private async Task RunSchedulerAsync(FunctionContext context)
     {
         var logContext = new SchedulerLogContext(context.InvocationId, this.Clock);
 
