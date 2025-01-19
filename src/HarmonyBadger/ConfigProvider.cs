@@ -2,11 +2,9 @@
 using System.Text.Json;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 using HarmonyBadger.ConfigModels;
 using HarmonyBadger.ConfigModels.Discord;
-using Microsoft.Azure.Functions.Worker.Core.FunctionMetadata;
 
 namespace HarmonyBadger;
 

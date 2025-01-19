@@ -1,6 +1,6 @@
 using Azure.Storage.Queues.Models;
-using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Logging;
 
 using HarmonyBadger.ConfigModels;
 using HarmonyBadger.TaskProcessor.TaskHandlers;
@@ -45,16 +45,16 @@ public class TaskProcessorFunction
         try
         {
             await this.HandleMessageAsync(queueMessage, logContext);
-            Logger.LogMetric(Constants.MetricNames.TaskExecuted, 1);
+            this.Logger.LogMetric(Constants.MetricNames.TaskExecuted, 1);
         }
         catch (Exception)
         {
             // Handling the task failed; error detail logging is handled in HandleMessageAsync.
             // We'll swallow the error -- Azure Function-level retry is not needed.
-            Logger.LogMetric(Constants.MetricNames.TaskExecutionFailed, 1);
+            this.Logger.LogMetric(Constants.MetricNames.TaskExecutionFailed, 1);
         }
 
-        logContext.PublishTo(Logger);
+        logContext.PublishTo(this.Logger);
     }
 
     private async Task HandleMessageAsync(
@@ -71,7 +71,7 @@ public class TaskProcessorFunction
         catch (Exception e)
         {
             var error = $"Deserializing message {queueMessage.MessageId} failed.";
-            Logger.LogError(e, error);
+            this.Logger.LogError(e, error);
             logContext.TaskProcessingFailureReason = error;
             throw;
         }
@@ -79,12 +79,12 @@ public class TaskProcessorFunction
         try
         {
             var handler = this.TaskHandlerFactory.CreateHandler(task.Task.TaskKind);
-            await handler.HandleAsync(task.Task, Logger);
+            await handler.HandleAsync(task.Task, this.Logger);
         }
         catch (Exception e)
         {
             var error = $"Executing task {task.ToLogString()} (from message {queueMessage.MessageId}) failed.";
-            Logger.LogError(e, error);
+            this.Logger.LogError(e, error);
             logContext.TaskProcessingFailureReason = error;
             throw;
         }

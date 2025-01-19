@@ -61,7 +61,7 @@ public class SchedulerFunction
         var logContext = new SchedulerLogContext(context.InvocationId, this.Clock);
 
         // Load the Scheduled Task configs.
-        var configs = await this.ConfigProvider.GetScheduledTasksAsync(Logger);
+        var configs = await this.ConfigProvider.GetScheduledTasksAsync(this.Logger);
         logContext.LoadedTaskConfigs = configs;
 
         // Evaluate all the configs' schedules.
