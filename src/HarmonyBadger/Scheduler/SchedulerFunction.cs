@@ -56,7 +56,7 @@ public class SchedulerFunction
     /// </summary>
     [Function("HarmonyBadger_Scheduler")]
     public async Task RunAsync(
-        [TimerTrigger(EveryHourAt50MinsTrigger, RunOnStartup = LauchImmediately)] TimerInfo _,
+        [TimerTrigger(EveryHourAt50MinsTrigger, RunOnStartup = LauchImmediately)] TimerInfo timer,
         FunctionContext context)
         => await this.RunSchedulerAsync(context);
 
@@ -65,7 +65,7 @@ public class SchedulerFunction
     /// </summary>
     [Function("HarmonyBadger_Scheduler_Force")]
     public async Task ForceRunAsync(
-        [HttpTrigger(AuthorizationLevel.Function)] HttpRequest _,
+        [HttpTrigger(AuthorizationLevel.Function)] HttpRequest request,
         FunctionContext context)
         => await this.RunSchedulerAsync(context);
 
