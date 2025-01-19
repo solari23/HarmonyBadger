@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.UserSecrets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace HarmonyBadger;
 
@@ -30,6 +31,7 @@ public static class Program
             .ConfigureFunctionsWebApplication()
             .ConfigureAppConfiguration(ConfigureAppConfiguration)
             .ConfigureServices(ConfigureServices)
+            .ConfigureLogging(ConfigureLogging)
             .Build();
 
         host.Run();
@@ -66,6 +68,21 @@ public static class Program
         services.AddSingleton<IEmailClient, MSGraphEmailClient>();
         services.AddSingleton<ITemplateEngine, DotLiquidTemplateEngine>();
         services.AddMemoryCache();
+    }
+
+    private static void ConfigureLogging(ILoggingBuilder loggingBuilder)
+    {
+        loggingBuilder.Services.Configure<LoggerFilterOptions>(options =>
+        {
+            // Removes a default rule set up by AppInsights that filters out logs below 'warning'.
+            // https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide?tabs=hostbuilder%2Cwindows#managing-log-levels
+            LoggerFilterRule defaultRule = options.Rules.FirstOrDefault(rule => rule.ProviderName
+                == "Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider");
+            if (defaultRule is not null)
+            {
+                options.Rules.Remove(defaultRule);
+            }
+        });
     }
 
 #if DEBUG
