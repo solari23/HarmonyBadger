@@ -1,12 +1,11 @@
 using System.Text.Json;
 
 using Azure.Storage.Queues;
-using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 
 using HarmonyBadger.ConfigModels;
-
-using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
 
 namespace HarmonyBadger.Scheduler;
 
@@ -30,30 +29,39 @@ public class SchedulerFunction
     /// </summary>
     public SchedulerFunction(
         IConfigProvider configProvider,
-        IClock clock)
+        IClock clock,
+        ILogger<SchedulerFunction> logger,
+        IAzureClientFactory<QueueServiceClient> queueClientFactory)
     {
         this.ConfigProvider = configProvider;
         this.Clock = clock;
+        this.Logger = logger;
+
+        this.TaskQueueClient = queueClientFactory
+            .CreateClient(Constants.DefaultStorageClientName)
+            .GetQueueClient(Constants.TaskQueueName);
     }
 
     private IConfigProvider ConfigProvider { get; }
 
     private IClock Clock { get; }
 
+    private ILogger<SchedulerFunction> Logger { get; }
+
+    private QueueClient TaskQueueClient { get; }
+
     /// <summary>
     /// The entry point for the HarmonyBadger_Scheduler function.
     /// </summary>
-    [FunctionName("HarmonyBadger_Scheduler")]
+    [Function("HarmonyBadger_Scheduler")]
     public async Task RunAsync(
         [TimerTrigger(EveryHourAt50MinsTrigger, RunOnStartup = LauchImmediately)] TimerInfo myTimer,
-        [Queue(Constants.TaskQueueName)] QueueClient taskQueueClient,
-        ILogger log,
-        ExecutionContext context)
+        FunctionContext context)
     {
         var logContext = new SchedulerLogContext(context.InvocationId, this.Clock);
 
         // Load the Scheduled Task configs.
-        var configs = await this.ConfigProvider.GetScheduledTasksAsync(log);
+        var configs = await this.ConfigProvider.GetScheduledTasksAsync(Logger);
         logContext.LoadedTaskConfigs = configs;
 
         // Evaluate all the configs' schedules.
@@ -77,19 +85,19 @@ public class SchedulerFunction
                     ? null
                     : task.TriggerTimeUtc - now;
 
-                await taskQueueClient.SendMessageAsync(taskJson, delay);
-                log.LogMetric(Constants.MetricNames.TaskQueued, 1);
+                await this.TaskQueueClient.SendMessageAsync(taskJson, delay);
+                this.Logger.LogMetric(Constants.MetricNames.TaskQueued, 1);
             }
             catch (Exception ex)
             {
                 failedEnqueueCount++;
-                log.LogError(ex, $"Failed to enqueue task [{task.ToLogString()}]. It will be dropped.");
-                log.LogMetric(Constants.MetricNames.EnqueueTaskFailed, 1);
+                this.Logger.LogError(ex, $"Failed to enqueue task [{task.ToLogString()}]. It will be dropped.");
+                this.Logger.LogMetric(Constants.MetricNames.EnqueueTaskFailed, 1);
             }
         }
 
         logContext.FailedTaskEnqueueCount = failedEnqueueCount;
-        logContext.Publish(log);
+        logContext.PublishTo(this.Logger);
     }
 
     private void GetTriggerCheckTimeRange(out DateTimeOffset startUtc, out DateTimeOffset endUtc)

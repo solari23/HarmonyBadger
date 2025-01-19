@@ -1,5 +1,4 @@
 ﻿using DotLiquid;
-using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
@@ -68,12 +67,12 @@ public class DotLiquidTemplateEngine : ITemplateEngine
         public const string Environment = "HB_Environment";
     }
 
-    public DotLiquidTemplateEngine(IMemoryCache cache, IOptions<ExecutionContextOptions> azureFunctionContext, IClock clock)
+    public DotLiquidTemplateEngine(IMemoryCache cache, IClock clock)
     {
         this.Cache = cache;
         this.Clock = clock;
         this.TemplateFileDirectoryPath = Path.Combine(
-            azureFunctionContext.Value.AppDirectory,
+            Directory.GetCurrentDirectory(),
             Constants.TemplateFilesDirectoryName);
 
         Template.DefaultSyntaxCompatibilityLevel = SyntaxCompatibility.DotLiquid22;

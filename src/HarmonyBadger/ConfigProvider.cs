@@ -1,12 +1,12 @@
 ﻿using System.Security.Cryptography;
 using System.Text.Json;
 
-using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using HarmonyBadger.ConfigModels;
 using HarmonyBadger.ConfigModels.Discord;
+using Microsoft.Azure.Functions.Worker.Core.FunctionMetadata;
 
 namespace HarmonyBadger;
 
@@ -41,10 +41,10 @@ public class ConfigProvider : IConfigProvider
     /// Creates a new instance of the <see cref="ConfigProvider"/> class.
     /// </summary>
     /// <param name="azureFunctionContext">DI-injected information about the Azure Function context.</param>
-    public ConfigProvider(IOptions<ExecutionContextOptions> azureFunctionContext)
+    public ConfigProvider()
     {
         this.ConfigDirectoryPath = Path.Combine(
-            azureFunctionContext.Value.AppDirectory,
+            Directory.GetCurrentDirectory(),
             Constants.TaskConfigsDirectoryName);
     }
 

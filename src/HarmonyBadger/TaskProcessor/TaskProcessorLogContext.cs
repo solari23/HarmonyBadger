@@ -16,9 +16,9 @@ public class TaskProcessorLogContext
     /// </summary>
     /// <param name="invocationId">The Azure Function invocation ID.</param>
     /// <param name="clock">A clock that provides the current time.</param>
-    public TaskProcessorLogContext(Guid invocationId, IClock clock)
+    public TaskProcessorLogContext(string invocationId, IClock clock)
     {
-        this.InvocationId = invocationId.ToString();
+        this.InvocationId = invocationId;
         this.ExecutionTimeUtc = clock.UtcNow.DateTime;
         this.ExecutionTimeLocal = clock.LocalNow.DateTime;
     }
@@ -52,7 +52,7 @@ public class TaskProcessorLogContext
     /// Formats and publishes log data.
     /// </summary>
     /// <param name="logger">The logging utility.</param>
-    public void Publish(ILogger logger)
+    public void PublishTo(ILogger logger)
     {
         var builder = new StringBuilder();
         builder.Append($"[{this.ExecutionTimeUtc:s}][L:{this.ExecutionTimeLocal}][TaskProcessor]");
