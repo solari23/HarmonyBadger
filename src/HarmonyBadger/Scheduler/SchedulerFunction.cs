@@ -65,7 +65,7 @@ public class SchedulerFunction
     /// </summary>
     [Function("HarmonyBadger_Scheduler_Force")]
     public async Task ForceRunAsync(
-        [HttpTrigger(AuthorizationLevel.Function)] HttpRequest request,
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "forceScheduler")] HttpRequest request,
         FunctionContext context)
         => await this.RunSchedulerAsync(context);
 
