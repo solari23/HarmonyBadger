@@ -2,28 +2,6 @@
   "IsEnabled": false,
   "Schedule": [
     {
-      "ScheduleKind": "Cron",
-      "Expression": "*/30 * * * *"
-    },
-    {
-      "ScheduleKind": "Daily",
-      "Time": "9 AM"
-    },
-    {
-      "ScheduleKind": "Weekly",
-      "Day": "Monday",
-      "Time": "11 PM"
-    },
-    {
-      "ScheduleKind": "Monthly",
-      "DayOfMonth": 21,
-      "Time": "14:23"
-    },
-    {
-      "ScheduleKind": "LastDayOfMonth",
-      "Time": "18:00"
-    },
-    {
       "ScheduleKind": "FixedDate",
       "Date": "2025-04-20",
       "Time": "9 AM"

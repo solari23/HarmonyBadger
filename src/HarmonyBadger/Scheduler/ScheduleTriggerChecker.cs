@@ -60,12 +60,14 @@ public class ScheduleTriggerChecker
         {
             var triggerTimesUtc = scheduledTask.Schedule
                 .SelectMany(sched => sched.ToCronExpressions()) // Convert the schedule to a cron expression strings
+                .Where(scheduleString => !string.IsNullOrEmpty(scheduleString))
                 .Select(cronExpr => CrontabSchedule.Parse(cronExpr, cronParseOptions)) // Convert cron expression strings to cron objects
                 .SelectMany(c => c.GetNextOccurrences(startLocal, endLocal)) // Evaluate the cron objects for the specified timespan
                 .OrderBy(time => time)
                 .Take(Constants.MaxTriggersPerSchedule) // Limit how many times the task can trigger
                 .Select(time => TimeHelper.ConvertToUtc(time)) // Convert the timestamps to UTC
-                .Distinct(); // De-dup in case two schedules fire for the same time.
+                .Distinct() // De-dup in case two schedules fire for the same time.
+                .ToList();
 
             if (triggerTimesUtc.Any())
             {
