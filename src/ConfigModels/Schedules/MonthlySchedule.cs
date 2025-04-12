@@ -12,7 +12,7 @@ namespace HarmonyBadger.ConfigModels.Schedules;
 public class MonthlySchedule : ISchedule, IValidatableObject, IJsonOnDeserialized
 {
     /// <inheritdoc />
-    public ScheduleKind ScheduleKind => ScheduleKind.LastDayOfMonth;
+    public ScheduleKind ScheduleKind => ScheduleKind.Monthly;
 
     /// <summary>
     /// The day of the month for the schedule to trigger (1-31).
